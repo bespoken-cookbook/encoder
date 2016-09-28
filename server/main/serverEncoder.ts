@@ -55,7 +55,7 @@ export module Encoder {
         })
     }
 
-    function downloadAndEncode(sourceUrl: string, callback: (err: Error, outputPath: string) => void) {
+    export function downloadAndEncode(sourceUrl: string, callback: (err: Error, outputPath: string) => void) {
         saveTempFile(sourceUrl, function(fileUri: string, error: Error) {
             if (error) {
                 callback(error, null);
@@ -68,7 +68,7 @@ export module Encoder {
         });
     }
 
-    function convertFile(inputFile: string, callback: (outputFile: string, err: Error) => void) {
+    export function convertFile(inputFile: string, callback: (outputFile: string, err: Error) => void) {
         // Retrieving a tmp name for the outputPath.
         var options: tmp.FileOptions = {
             postfix: ".mp3"
@@ -132,7 +132,7 @@ export module Encoder {
         }
     }
 
-    function createFolder(path: string, callback: (err: NodeJS.ErrnoException) => void) {
+    export function createFolder(path: string, callback: (err: NodeJS.ErrnoException) => void) {
         fs.mkdir(path, function (err: NodeJS.ErrnoException) {
             var callbackErr: NodeJS.ErrnoException = err;
             if (err) {

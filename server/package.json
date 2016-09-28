@@ -1,1 +1,10 @@
-{}
+{
+  "devDependencies": {
+    "mocha": "^3.1.0"
+  },
+  
+  "scripts": {
+        "pretest": "tsc -p .",
+        "test": "mocha ./outputs/source/test"
+    }
+}

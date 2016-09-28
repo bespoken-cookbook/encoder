@@ -1,0 +1,51 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "linux": {
+        "command": "sh",
+        "args": [
+            "-c"
+        ]
+    },
+    "osx": {
+        "command": "sh",
+        "args": [
+            "-c"
+        ]
+    },
+    "windows": {
+        "command": "powershell",
+        "args": [
+            "-Command"
+        ]
+    },
+    "isShellCommand": true,
+    "args": [],
+    "showOutput": "silent",
+    "tasks": [
+        {
+            "taskName": "Build",
+            "args": [
+                "tsc -p ."
+            ],
+            "problemMatcher": "$tsc",
+            "suppressTaskName": true
+        },
+        {
+            "taskName": "StartServer",
+            "args": [
+                "node ./outputs/source/index.js"
+            ],
+            "suppressTaskName": true
+        }, 
+        {
+            "taskName": "BuildAndStartServer",
+            "args": [
+                "tsc -p . && node ./outputs/source/index.js"
+            ],
+            "isBuildCommand": true,
+            "suppressTaskName": true
+        }
+    ]
+}

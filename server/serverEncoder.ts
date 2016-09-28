@@ -10,7 +10,7 @@ import * as cprocess from "child_process";
 import * as aws from "aws-sdk";
 
 export module Encoder {
-    export function encode(musicSourceUrl: string, targetBucket: string, targetKey: string, accessKeyId: string, accessSecret: string, callback: (err: Error) => void) {
+    export function encode(musicSourceUrl: string, targetBucket: string, targetKey: string, accessKeyId: string, accessSecret: string, callback: (err: Error, url: String) => void) {
         console.info('Encoder created.');
             console.log("sourceUrl: " + musicSourceUrl +
                 "\n targetBucket: " + targetBucket +
@@ -27,15 +27,15 @@ export module Encoder {
                         accessKeyId: accessKeyId,
                         secretAccessKey: accessSecret
                     });
-                    sendOffToBucket(mp3file, targetBucket, targetKey, function(err: Error) {
+                    sendOffToBucket(mp3file, targetBucket, targetKey, function(err: Error, url: string) {
                         fs.unlink(mp3file);
-                        callback(err);
+                        callback(err, url);
                     });
                 }
             })
     };
 
-    function sendOffToBucket(fileUri: string, bucket: string, bucketKey: string, callback: (err: Error) => void) {
+    function sendOffToBucket(fileUri: string, bucket: string, bucketKey: string, callback: (err: Error, url: string) => void) {
         console.info("sending " + fileUri + " to " + bucket + " with key " + bucketKey);
         fs.readFile(fileUri, {encoding: null}, function(err: NodeJS.ErrnoException, data: string) {
             var s3: aws.S3 = new aws.S3();
@@ -43,8 +43,14 @@ export module Encoder {
             s3.putObject(params, function(err: Error, data: any) {
                 if (err) {
                     console.error(err.message);
+                    callback(err, null);
+                    return;
                 }
-                callback(err);
+                s3.getSignedUrl('putObject', {Bucket: bucket, Key: bucketKey}, function(err: Error, url: string) {
+                    // The signed URL gives a bunch of parameters that includes the signature and Access key which we very much do not want.
+                    var stripped: string = stripQueryAndFragments(url);
+                    callback(err, stripped);
+                });
             });
         })
     }
@@ -149,10 +155,14 @@ export module Encoder {
     }
 
     function getExtension(url: string, fallback: string): string {
-        var extension: string = url.substr(url.lastIndexOf("."));
+        var extension: string = (url) ? url.substr(url.lastIndexOf(".")) : "";
         if (extension.length == 0) {
             extension = fallback;
         }
         return extension;
+    }
+
+    function stripQueryAndFragments(url: string) {
+        return (url) ? url.substr(0, url.indexOf("?")) : url;
     }
 }

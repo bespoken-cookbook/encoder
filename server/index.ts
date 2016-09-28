@@ -47,12 +47,13 @@ var server = http.createServer(function (request: http.IncomingMessage, response
             var accessKeyId: string = headers[PARAM_ACCESS_ID];
             var accessSecret: string = headers[PARAM_ACCESS_SECREY_KEY];
             
-            Encoder.encode(musicSourceUrl, targetBucket, targetKey, accessKeyId, accessSecret, function(err) {
+            Encoder.encode(musicSourceUrl, targetBucket, targetKey, accessKeyId, accessSecret, function(err: Error, url: string) {
                 console.info('ending');
 
                 response.statusCode = (err) ? 400 : 200;
                 response.statusMessage = (err) ? err.message : "OK";
-                response.setHeader('Content-Type', 'application/json');
+                response.setHeader('Content-Type', 'text/plain');
+                response.write(url);
                 response.end();
             });
         })

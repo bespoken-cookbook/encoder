@@ -60,7 +60,7 @@ export module Encoder {
             if (error) {
                 callback(error, null);
             } else {
-                convertFile(fileUri, function(outputPath: string, error: Error) {
+                convertFile(fileUri, function(error: Error, outputPath: string) {
                     fs.unlink(fileUri);
                     callback(error, outputPath);
                 });
@@ -68,7 +68,9 @@ export module Encoder {
         });
     }
 
-    export function convertFile(inputFile: string, callback: (outputFile: string, err: Error) => void) {
+    export function convertFile(inputFile: string, callback: (err: Error, outputFile: string) => void) {
+        var normalizedPath: string = path.normalize(inputFile);
+
         // Retrieving a tmp name for the outputPath.
         var options: tmp.FileOptions = {
             postfix: ".mp3"
@@ -76,17 +78,21 @@ export module Encoder {
 
         tmp.tmpName(options, function(error: Error, outputPath: string) {
             if (error) {
-                callback(null, error);
+                callback(error, null);
                 return;
             }
 
-            console.info("Converting " + inputFile + " to " + outputPath);
+            console.info("Converting " + normalizedPath + " to " + outputPath);
 
             // This is the codec that Amazon suggests regarding the encoding.
-            cprocess.execFile('ffmpeg', ['-i', inputFile, '-codec:a', 'libmp3lame', '-b:a', '48k', '-ar', '16000', '-af', 'volume=3', outputPath],
+            cprocess.execFile('ffmpeg', ['-i', normalizedPath, '-codec:a', 'libmp3lame', '-b:a', '48k', '-ar', '16000', '-af', 'volume=3', outputPath],
                 function(error: Error, stdout: string, stderr: string) {
                     console.info("Converted wiht error? " + (error != null));
-                    callback(outputPath, error);
+                    if (error) {
+                        fs.unlink(outputPath);
+                        outputPath = null;
+                    }
+                    callback(error, outputPath);
                 });
         });
     }
@@ -143,15 +149,6 @@ export module Encoder {
             }
             callback(callbackErr);
         });
-    }
-
-    function fullNetworkFileName(url: string): string {
-        return url.substr(url.lastIndexOf("/"));
-    }
-
-    function getFileName(url: string, seperator: string): string {
-        var lastPath: string = url.substr(url.lastIndexOf(seperator), url.lastIndexOf("."));
-        return lastPath;
     }
 
     function getExtension(url: string, fallback: string): string {

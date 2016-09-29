@@ -18,6 +18,6 @@ export function fileName(filePath: string): string {
  * @return The extension of the file or the fallback if the filePath was null or if there was not an extension.
  */
 export function extension(filePath: string, fallback?: string): string {
-    var indexOfDot: number = (filePath) ? filePath.lastIndexOf(".") : -1;
+    let indexOfDot: number = (filePath) ? filePath.lastIndexOf(".") : -1;
     return (indexOfDot >= 0) ? filePath.substr(filePath.lastIndexOf(".")) : fallback;
 } 

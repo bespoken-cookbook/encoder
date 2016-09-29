@@ -9,7 +9,7 @@ import * as path from "path";
 import * as cprocess from "child_process";
 import * as aws from "aws-sdk";
 
-export module Encoder {
+export namespace Encoder {
 
     /**
      * A method that will encode the audio file at the given remote URL, encode it to an Amazon Echo compatiable audio file, then
@@ -26,7 +26,7 @@ export module Encoder {
             downloadAndEncode(musicSourceUrl, function (err: Error, mp3file: string) {
                 if (err != null) {
                     callback(err, null);
-                } else {    
+                } else {
                     aws.config.update( {
                         accessKeyId: accessKeyId,
                         secretAccessKey: accessSecret
@@ -36,7 +36,7 @@ export module Encoder {
                         callback(err, url);
                     });
                 }
-            })
+            });
     };
 
     /**
@@ -49,20 +49,20 @@ export module Encoder {
      */
     export function sendOffToBucket(fileUri: string, bucket: string, itemKey: string, callback: (err: Error, url: string) => void) {
         fs.readFile(fileUri, {encoding: null}, function(err: NodeJS.ErrnoException, data: string) {
-            var s3: aws.S3 = new aws.S3();
-            var params: aws.s3.PutObjectRequest = {Bucket: bucket, Key: itemKey, Body: data, ACL: 'public-read'};
+            let s3: aws.S3 = new aws.S3();
+            let params: aws.s3.PutObjectRequest = {Bucket: bucket, Key: itemKey, Body: data, ACL: "public-read"};
             s3.putObject(params, function(err: Error, data: any) {
                 if (err) {
                     callback(err, null);
                     return;
                 }
-                s3.getSignedUrl('putObject', {Bucket: bucket, Key: itemKey}, function(err: Error, url: string) {
+                s3.getSignedUrl("putObject", {Bucket: bucket, Key: itemKey}, function(err: Error, url: string) {
                     // The signed URL gives a bunch of parameters that includes the signature and Access key which we very much do not want.
-                    var stripped: string = stripQueryAndFragments(url);
+                    let stripped: string = stripQueryAndFragments(url);
                     callback(err, stripped);
                 });
             });
-        })
+        });
     }
 
     /**
@@ -91,12 +91,12 @@ export module Encoder {
      * @param callback: Callback to retrieve the outputFile path pointing to the encoded file or an error.
      */
     export function convertFile(inputFile: string, callback: (err: Error, outputFile: string) => void) {
-        var normalizedPath: string = path.normalize(inputFile);
+        let normalizedPath: string = path.normalize(inputFile);
 
         // Retrieving a tmp name for the outputPath.
-        var options: tmp.FileOptions = {
+        let options: tmp.FileOptions = {
             postfix: ".mp3"
-        }
+        };
 
         tmp.tmpName(options, function(error: Error, outputPath: string) {
             if (error) {
@@ -105,7 +105,7 @@ export module Encoder {
             }
 
             // This is the codec that Amazon suggests regarding the encoding.
-            cprocess.execFile('ffmpeg', ['-i', normalizedPath, '-codec:a', 'libmp3lame', '-b:a', '48k', '-ar', '16000', '-af', 'volume=3', outputPath],
+            cprocess.execFile("ffmpeg", ["-i", normalizedPath, "-codec:a", "libmp3lame", "-b:a", "48k", "-ar", "16000", "-af", "volume=3", outputPath],
                 function(error: Error, stdout: string, stderr: string) {
                     if (error) {
                         fs.unlink(outputPath);
@@ -123,24 +123,24 @@ export module Encoder {
      * @param callback: Callback to retrieve the local location of the file or an error if one occurred. 
      */
     function saveTempFile(fileUrl: string, callback: (err: Error, fileUri: string) => void) {
-        var postfix: string = getExtension(fileUrl, ".tmp");
-        var options: tmp.FileOptions = {
+        let postfix: string = getExtension(fileUrl, ".tmp");
+        let options: tmp.FileOptions = {
             postfix: getExtension(fileUrl, ".tmp"),
             keep: true
-        }
+        };
 
         tmp.file(options, function (err: Error, inputPath: string, fileDescriptor: number) {
-            var file: fs.WriteStream = fs.createWriteStream(inputPath);
+            let file: fs.WriteStream = fs.createWriteStream(inputPath);
 
             networkGet(fileUrl, function (response: http.IncomingMessage) {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     try {
                         response.pipe(file);
 
-                        file.on('finish', function() {
+                        file.on("finish", function() {
                             file.close();
                             callback(null, inputPath);
-                        })
+                        });
                     } catch (e) {
                         callback(e, null);
                     }
@@ -148,11 +148,11 @@ export module Encoder {
                     callback(Error("Could not retrieve file from " + fileUrl), null);
                 }
             });
-        })
+        });
     }
 
     function networkGet(fileUrl: string, callback: (response: http.IncomingMessage) => void) {
-        var isSecure: Boolean = fileUrl.startsWith("https");
+        let isSecure: Boolean = fileUrl.startsWith("https");
         if (isSecure) {
             https.get(fileUrl, callback);
         } else {
@@ -161,8 +161,8 @@ export module Encoder {
     }
 
     function getExtension(url: string, fallback: string): string {
-        var extension: string = (url) ? url.substr(url.lastIndexOf(".")) : "";
-        if (extension.length == 0) {
+        let extension: string = (url) ? url.substr(url.lastIndexOf(".")) : "";
+        if (extension.length === 0) {
             extension = fallback;
         }
         return extension;

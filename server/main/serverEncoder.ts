@@ -11,18 +11,10 @@ import * as aws from "aws-sdk";
 
 export module Encoder {
     export function encode(musicSourceUrl: string, targetBucket: string, targetKey: string, accessKeyId: string, accessSecret: string, callback: (err: Error, url: String) => void) {
-        console.info('Encoder created.');
-            console.log("sourceUrl: " + musicSourceUrl +
-                "\n targetBucket: " + targetBucket +
-                "\n targetKey: " + targetKey +
-                "\n accessKeyId: " + accessKeyId +
-                "\n accessSecret: " + accessSecret);
-
             downloadAndEncode(musicSourceUrl, function (err: Error, mp3file: string) {
-                if (err) {
-                    console.log(err.message);
+                if (err != null) {
+                    callback(err, null);
                 } else {
-                    console.log("File has been converted.");
                     aws.config.update( {
                         accessKeyId: accessKeyId,
                         secretAccessKey: accessSecret
@@ -36,13 +28,11 @@ export module Encoder {
     };
 
     function sendOffToBucket(fileUri: string, bucket: string, bucketKey: string, callback: (err: Error, url: string) => void) {
-        console.info("sending " + fileUri + " to " + bucket + " with key " + bucketKey);
         fs.readFile(fileUri, {encoding: null}, function(err: NodeJS.ErrnoException, data: string) {
             var s3: aws.S3 = new aws.S3();
             var params: aws.s3.PutObjectRequest = {Bucket: bucket, Key: bucketKey, Body: data, ACL: 'public-read'};
             s3.putObject(params, function(err: Error, data: any) {
                 if (err) {
-                    console.error(err.message);
                     callback(err, null);
                     return;
                 }
@@ -82,12 +72,9 @@ export module Encoder {
                 return;
             }
 
-            console.info("Converting " + normalizedPath + " to " + outputPath);
-
             // This is the codec that Amazon suggests regarding the encoding.
             cprocess.execFile('ffmpeg', ['-i', normalizedPath, '-codec:a', 'libmp3lame', '-b:a', '48k', '-ar', '16000', '-af', 'volume=3', outputPath],
                 function(error: Error, stdout: string, stderr: string) {
-                    console.info("Converted wiht error? " + (error != null));
                     if (error) {
                         fs.unlink(outputPath);
                         outputPath = null;
@@ -105,18 +92,15 @@ export module Encoder {
         }
 
         tmp.file(options, function (err: Error, inputPath: string, fileDescriptor: number) {
-            console.info("File created at " + inputPath);
             var file: fs.WriteStream = fs.createWriteStream(inputPath);
 
             networkGet(fileUrl, function (response: http.IncomingMessage) {
                 if (response.statusCode == 200) {
                     try {
-                        console.info("Piping to file.");
                         response.pipe(file);
 
                         file.on('finish', function() {
                             file.close();
-                            console.info("File piped.");
                             callback(inputPath, null);
                         })
                     } catch (e) {

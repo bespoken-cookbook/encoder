@@ -3,6 +3,7 @@ import * as encoder from "../main/serverEncoder"
 import * as fs from "fs";
 import * as path from "path";
 import * as assert from "assert";
+import * as https from "https";
 
 const TEST_FOLDER: string = "testFolder" + path.sep;
 const AUDIO_FILE: string = __dirname + path.sep + "assets" + path.sep + "audio.m4a";
@@ -10,23 +11,45 @@ const IMAGE_FILE: string = __dirname + path.sep + "assets" + path.sep + "img.png
 const AUDIO_URL: string = "https://d2mxb5cuq6ityb.cloudfront.net/Demo-Geico.m4a";
 const IMAGE_URL: string = "https://xapp-wpengine.netdna-ssl.com/wp-content/themes/xapp/assets/images/logo.png";
 
+const TEST_BUCKET: string = "bespoken/encoded/test";
+const TEST_KEY: string = "testKey.mp3";
+const ACCESS_ID: string = "AKIAIQZTJPUMZQ42J23Q";
+const SECRET: string = "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";
+
 describe("ServerEncoder", () => {
-    
-    describe("createFolder", () => {
-        it("Will create a temp folder in specified location without error.", (done: MochaDone) => {
-            encoder.Encoder.createFolder(TEST_FOLDER, (err: NodeJS.ErrnoException) => {
+
+    describe("encoder", () => {
+        it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the S3 bucket.", (done: MochaDone) => {
+            encoder.Encoder.encode(AUDIO_URL, TEST_BUCKET, TEST_KEY, ACCESS_ID, SECRET, (err: Error, url: String) => {
                 if (err) {
                     done(err);
                 } else {
-                    done(verifyFile(TEST_FOLDER, fs.constants.F_OK));
-                    fs.rmdirSync(TEST_FOLDER);
+                    if (url == null) {
+                        done(Error("Url provided was null when no error was thrown."));
+                    } else {
+                        done();
+                    }
+                }
+            });
+        });
+
+        it("Tests the full \"encoder\" method with a bad URL.  It should return an error with no URL.", (done: MochaDone) => {
+            encoder.Encoder.encode(IMAGE_URL, TEST_BUCKET, TEST_KEY, ACCESS_ID, SECRET, (err: Error, url: String) => {
+                if (err != null) {
+                    if (url) {
+                        done(Error("A url of " + url + " was returned when \"null\" was expected."));
+                    } else {
+                        done();
+                    }
+                } else {
+                    done(Error("No error was thrown and a url of " + url + " was returned."));
                 }
             });
         });
     });
 
     describe("convertFile", () => {
-        it("Will convert " + AUDIO_FILE + " to a valid MP3 file without error.", (done: MochaDone) => {
+        it("Converts a valid audio file to a valid MP3 file without error.", (done: MochaDone) => {
             encoder.Encoder.convertFile(AUDIO_FILE, (err: Error, outputPath: string) => {
                 if (err) {
                     done(err);
@@ -38,10 +61,9 @@ describe("ServerEncoder", () => {
                 }
             });
         });
-    });
 
-    describe("convertFile with wrong image type", () => {
-        it("Will attempt to convert an image file to a music file. It should fail and throw an error with no output path.", (done: MochaDone) => {
+
+        it("Attempts to convert an image file to a music file. It should fail and throw an error with no output path.", (done: MochaDone) => {
             encoder.Encoder.convertFile(IMAGE_FILE, (err: Error, outputPath: string) => {
                 if (!err) {
                     done(Error("An error was supposed to be thrown but was not thrown."));
@@ -69,9 +91,8 @@ describe("ServerEncoder", () => {
                 }
             });
         });
-    });
 
-    describe("downloadAndEncode with a bad file", () => {
+
         it("Checks that a file is not downloaded or encoded if it is not a suitable type. It must produce an error.", (done: MochaDone) => {
             encoder.Encoder.downloadAndEncode(IMAGE_URL, (err: Error, outputPath: string) => {
                 if (!err) {
@@ -80,9 +101,22 @@ describe("ServerEncoder", () => {
                     assert.equal(outputPath, null, "An output path was produced when it should have been null: OutputPath = " + outputPath);
                     done();
                 }
-            })
-        })
-    })
+            });
+        });
+    });
+
+    describe("createFolder", () => {
+        it("Will create a temp folder in specified location without error.", (done: MochaDone) => {
+            encoder.Encoder.createFolder(TEST_FOLDER, (err: NodeJS.ErrnoException) => {
+                if (err) {
+                    done(err);
+                } else {
+                    done(verifyFile(TEST_FOLDER, fs.constants.F_OK));
+                    fs.rmdirSync(TEST_FOLDER);
+                }
+            });
+        });
+    });
 
     function verifyFile(path: string, mode: number): Error {
         try {

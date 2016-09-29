@@ -1,13 +1,13 @@
 {
   "name": "alexa-encoder",
   "version": "0.0.1",
-
   "devDependencies": {
-    "mocha": "^3.1.0"
+    "coveralls": "^2.11.14",
+    "mocha": "^3.1.0",
+    "mocha-lcov-reporter": "^1.2.0"
   },
-  
   "scripts": {
-        "pretest": "tsc -p . && cp -rf test/assets outputs/source/test/",
-        "test": "mocha ./outputs/source/test"
-    }
+    "pretest": "tsc -p . && cp -rf test/assets outputs/source/test/",
+    "test": "mocha ./outputs/source/test"
+  }
 }

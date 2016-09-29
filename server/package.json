@@ -7,7 +7,7 @@
     "mocha-lcov-reporter": "^1.2.0"
   },
   "scripts": {
-    "pretest": "tsc -p . && cp -rf test/assets outputs/source/test/",
-    "test": "mocha ./outputs/source/test"
+    "pretest": "tsc -p . && cp -rf test/assets outputs/source/test/ && rm -r ./outputs/reports/coverage",
+    "test": "istanbul cover ./node_modules/mocha/bin/_mocha ./outputs/source/test || mv ./coverage ./outputs/reports"
   }
 }

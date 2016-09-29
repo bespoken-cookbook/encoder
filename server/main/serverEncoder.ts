@@ -10,11 +10,23 @@ import * as cprocess from "child_process";
 import * as aws from "aws-sdk";
 
 export module Encoder {
+
+    /**
+     * A method that will encode the audio file at the given remote URL, encode it to an Amazon Echo compatiable audio file, then
+     * send it off to the given Amazon S3 bucket with the given targetKey for the name.
+     * 
+     * @param musicSourceUrl: The remote URL to the audio file to encode.
+     * @param targetBucket: Amazon S3 bucket to send the encoded audio to.
+     * @param targetKey: Name of the encoded file.
+     * @param accessKeyId: The access ID for the S3 bucket.
+     * @param accessSecret: The access Secret for the S3 bucket.
+     * @param callback: Callback to retrieve the error or the remote URL to the encoded audio.
+     */
     export function encode(musicSourceUrl: string, targetBucket: string, targetKey: string, accessKeyId: string, accessSecret: string, callback: (err: Error, url: String) => void) {
             downloadAndEncode(musicSourceUrl, function (err: Error, mp3file: string) {
                 if (err != null) {
                     callback(err, null);
-                } else {
+                } else {    
                     aws.config.update( {
                         accessKeyId: accessKeyId,
                         secretAccessKey: accessSecret
@@ -27,16 +39,24 @@ export module Encoder {
             })
     };
 
-    function sendOffToBucket(fileUri: string, bucket: string, bucketKey: string, callback: (err: Error, url: string) => void) {
+    /**
+     * Sends the file at the given path off to the specified Amazon S3 bucket.
+     * 
+     * @param fileUri: The file location of the file to upload.
+     * @param bucket: The Amazon S3 bucket name to upload to.
+     * @param bucketKey: The name of the item to send.
+     * @param callback: Callback to receive  the URL to the item uploaded or an error if one occurred.
+     */
+    export function sendOffToBucket(fileUri: string, bucket: string, itemKey: string, callback: (err: Error, url: string) => void) {
         fs.readFile(fileUri, {encoding: null}, function(err: NodeJS.ErrnoException, data: string) {
             var s3: aws.S3 = new aws.S3();
-            var params: aws.s3.PutObjectRequest = {Bucket: bucket, Key: bucketKey, Body: data, ACL: 'public-read'};
+            var params: aws.s3.PutObjectRequest = {Bucket: bucket, Key: itemKey, Body: data, ACL: 'public-read'};
             s3.putObject(params, function(err: Error, data: any) {
                 if (err) {
                     callback(err, null);
                     return;
                 }
-                s3.getSignedUrl('putObject', {Bucket: bucket, Key: bucketKey}, function(err: Error, url: string) {
+                s3.getSignedUrl('putObject', {Bucket: bucket, Key: itemKey}, function(err: Error, url: string) {
                     // The signed URL gives a bunch of parameters that includes the signature and Access key which we very much do not want.
                     var stripped: string = stripQueryAndFragments(url);
                     callback(err, stripped);
@@ -45,8 +65,14 @@ export module Encoder {
         })
     }
 
+    /**
+     * Method that will download the file at the given URL and save it to a temporary file.
+     * 
+     * @param sourceUrl: The URL to download.
+     * @param callback: Callback to retrieve the outputPath to the saved temp file or an error if one occurred. 
+     */
     export function downloadAndEncode(sourceUrl: string, callback: (err: Error, outputPath: string) => void) {
-        saveTempFile(sourceUrl, function(fileUri: string, error: Error) {
+        saveTempFile(sourceUrl, function(error: Error, fileUri: string) {
             if (error) {
                 callback(error, null);
             } else {
@@ -58,6 +84,12 @@ export module Encoder {
         });
     }
 
+    /**
+     * Converts an audio file at the provided path to the Amazon Echo approved MP3 file.
+     * 
+     * @param inputFile: File path to the audio file.
+     * @param callback: Callback to retrieve the outputFile path pointing to the encoded file or an error.
+     */
     export function convertFile(inputFile: string, callback: (err: Error, outputFile: string) => void) {
         var normalizedPath: string = path.normalize(inputFile);
 
@@ -84,7 +116,13 @@ export module Encoder {
         });
     }
 
-    function saveTempFile(fileUrl: string, callback: (fileUri: string, err: Error) => void) {
+    /**
+     * Download a remote file and save it locally to a temp file.
+     * 
+     * @param fileUrl: The remote URL to the file to retrieve.
+     * @param callback: Callback to retrieve the local location of the file or an error if one occurred. 
+     */
+    function saveTempFile(fileUrl: string, callback: (err: Error, fileUri: string) => void) {
         var postfix: string = getExtension(fileUrl, ".tmp");
         var options: tmp.FileOptions = {
             postfix: getExtension(fileUrl, ".tmp"),
@@ -101,13 +139,13 @@ export module Encoder {
 
                         file.on('finish', function() {
                             file.close();
-                            callback(inputPath, null);
+                            callback(null, inputPath);
                         })
                     } catch (e) {
-                        callback(null, e);
+                        callback(e, null);
                     }
                 } else {
-                    callback(null, Error("Could not retrieve file from " + fileUrl));
+                    callback(Error("Could not retrieve file from " + fileUrl), null);
                 }
             });
         })
@@ -120,19 +158,6 @@ export module Encoder {
         } else {
             http.get(fileUrl, callback);
         }
-    }
-
-    export function createFolder(path: string, callback: (err: NodeJS.ErrnoException) => void) {
-        fs.mkdir(path, function (err: NodeJS.ErrnoException) {
-            var callbackErr: NodeJS.ErrnoException = err;
-            if (err) {
-                if (err.code == 'EEXIST') {
-                    // Error because the folder already exist. So what? Who cares? Throw out.
-                    callbackErr = null;
-                }
-            }
-            callback(callbackErr);
-        });
     }
 
     function getExtension(url: string, fallback: string): string {

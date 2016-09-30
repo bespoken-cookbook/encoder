@@ -56,11 +56,8 @@ export namespace Encoder {
                     callback(err, null);
                     return;
                 }
-                s3.getSignedUrl("putObject", {Bucket: bucket, Key: itemKey}, function(err: Error, url: string) {
-                    // The signed URL gives a bunch of parameters that includes the signature and Access key which we very much do not want.
-                    let stripped: string = stripQueryAndFragments(url);
-                    callback(err, stripped);
-                });
+                let url: string = urlForKey(bucket, itemKey);
+                callback(err, url);
             });
         });
     }
@@ -170,5 +167,9 @@ export namespace Encoder {
 
     function stripQueryAndFragments(url: string) {
         return (url) ? url.substr(0, url.indexOf("?")) : url;
+    }
+
+    function urlForKey(bucket: string, key: string) {
+        return "https://s3.amazonaws.com/" + bucket + "/" + key;
     }
 }

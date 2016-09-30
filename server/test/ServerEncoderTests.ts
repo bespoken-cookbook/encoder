@@ -12,6 +12,7 @@ const AUDIO_URL: string = "https://d2mxb5cuq6ityb.cloudfront.net/Demo-Geico.m4a"
 const IMAGE_URL: string = "https://xapp-wpengine.netdna-ssl.com/wp-content/themes/xapp/assets/images/logo.png";
 
 const TEST_BUCKET: string = "bespoken/encoded/test";
+const TEST_PUBLIC_BUCKET: string = "bespoken/encoded/test_public";
 const TEST_KEY: string = "testKey.mp3";
 const ACCESS_ID: string = "";
 const SECRET: string = "";
@@ -27,6 +28,22 @@ describe("ServerEncoder", () => {
                     if (url == null) {
                         done(Error("Url provided was null when no error was thrown."));
                     } else {
+                        assert.equal(url, "https://s3.amazonaws.com/" + TEST_BUCKET + "/" + TEST_KEY);
+                        done();
+                    }
+                }
+            });
+        });
+
+        it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the public S3 bucket.", (done: MochaDone) => {
+            encoder.Encoder.encode(AUDIO_URL, TEST_PUBLIC_BUCKET, TEST_KEY, null, null, (err: Error, url: String) => {
+                if (err) {
+                    done(err);
+                } else {
+                    if (url == null) {
+                        done(Error("Url provided was null when no error was thrown."));
+                    } else {
+                        assert.equal(url, "https://s3.amazonaws.com/" + TEST_PUBLIC_BUCKET + "/" + TEST_KEY);
                         done();
                     }
                 }
@@ -47,7 +64,7 @@ describe("ServerEncoder", () => {
             });
         });
 
-        it("Tests the full \"encoder\" will throw an error with bad credentials.", (done: MochaDone) => {
+        it("Tests the full \"encoder\" will throw an error with bad credentials to a private repo.", (done: MochaDone) => {
             encoder.Encoder.encode(AUDIO_URL, TEST_BUCKET, TEST_KEY, ACCESS_ID, "12345", (err: Error, url: String) => {
                 if (err) {
                     if (url) {

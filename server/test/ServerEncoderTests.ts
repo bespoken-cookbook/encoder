@@ -15,6 +15,11 @@ const IMAGE_URL: string = "https://xapp-wpengine.netdna-ssl.com/wp-content/theme
 const TEST_BUCKET: string = "bespoken/encoder/test";
 const TEST_PUBLIC_BUCKET: string = "bespoken/encoder/test";
 
+/**
+ * Unit and integration tests for the ServerEncoder scope.  This requires aws keys in order to
+ * run. It will take the credentials from the aws cli from the "~/.aws" folder.  Currently it
+ * will only take the default one. Multiple profile support would need to be added. 
+ */
 describe("ServerEncoder", () => {
     var TEST_KEY: string = "testKey.mp3";
     var ACCESS_ID: string = "";
@@ -24,7 +29,7 @@ describe("ServerEncoder", () => {
         try {
             var homeDirectory: string = os.homedir();
             var configsString: string = fs.readFileSync(homeDirectory + "/.aws/credentials", "utf8");
-            var configs: Map<string, string> = parseCreds(configsString);
+            var configs: Map<string, string> = parseCreds("default", configsString);
             ACCESS_ID = configs.get("aws_access_key_id");
             SECRET = configs.get("aws_secret_access_key");
         } catch(e) {
@@ -161,20 +166,22 @@ describe("ServerEncoder", () => {
      * Simple method that parses the aws credentials file in to a map.
      * It only supports the credentials like so:
      * 
-     * [default]
+     * [profile]
      * "key" = "value"
      * "key2" = "value2"
      */
-    function parseCreds(creds: string): Map<string, string> {
+    function parseCreds(profile: string, creds: string): Map<string, string> {
         let map: Map<string, string> = new Map<string, string>();
         
-        let keyValueString: string = creds.replace(/\[.*\]/g, " "); // Remove the block.
-        let lines: string[] = keyValueString.split(os.EOL);
+        let lines: string[] = creds.split(os.EOL);
 
         for (var i = 0; i < lines.length; ++i) {
-            if (lines[i].trim().match(/^\w+\s*=\s*\w+/)) {
-                let split: string[] = lines[i].split("=");
-                map.set(split[0].trim(), split[1].trim());
+            if (lines[i].trim().match("^\[" + profile + "\]")) {
+                if (lines[i].trim().match(/^\w+\s*=\s*\w+/)) {
+                    let split: string[] = lines[i].split("=");
+                    map.set(split[0].trim(), split[1].trim());
+                }
+                break;
             }
         }
         return map;

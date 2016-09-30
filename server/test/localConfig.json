@@ -1,0 +1,7 @@
+/// Local configuration file for the unit tests.  This needs to be updated 
+
+{
+    "awsAccessId":"<ACCESS ID HERE>",
+    "awsSecret":"<SECRET HERE>",
+    "awsBucket":"<TEST BUCKET>"
+}

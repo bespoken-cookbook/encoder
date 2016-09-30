@@ -1,6 +1,7 @@
 // / <reference path="./typings/node.d.ts" />
 import * as encoder from "../main/serverEncoder"
 import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
 import * as assert from "assert";
 import * as https from "https";
@@ -11,13 +12,26 @@ const IMAGE_FILE: string = __dirname + path.sep + "assets" + path.sep + "img.png
 const AUDIO_URL: string = "https://d2mxb5cuq6ityb.cloudfront.net/Demo-Geico.m4a";
 const IMAGE_URL: string = "https://xapp-wpengine.netdna-ssl.com/wp-content/themes/xapp/assets/images/logo.png";
 
-const TEST_BUCKET: string = "bespoken/encoded/test";
-const TEST_PUBLIC_BUCKET: string = "bespoken/encoded/test_public";
-const TEST_KEY: string = "testKey.mp3";
-const ACCESS_ID: string = "";
-const SECRET: string = "";
+const TEST_BUCKET: string = "bespoken/encoder/test";
+const TEST_PUBLIC_BUCKET: string = "bespoken/encoder/test";
 
 describe("ServerEncoder", () => {
+    var TEST_KEY: string = "testKey.mp3";
+    var ACCESS_ID: string = "";
+    var SECRET: string = "";
+
+    before(function() {
+        try {
+            var homeDirectory: string = os.homedir();
+            var configsString: string = fs.readFileSync(homeDirectory + "/.aws/credentials", "utf8");
+            var configs: Map<string, string> = parseCreds(configsString);
+            ACCESS_ID = configs.get("aws_access_key_id");
+            SECRET = configs.get("aws_secret_access_key");
+        } catch(e) {
+            console.error(e);
+            throw Error("Unable to find aws credentials.  Please install and configure aws cli to run these tests.")
+        }
+    })
 
     describe("encoder", () => {
         it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the S3 bucket.", (done: MochaDone) => {
@@ -141,5 +155,28 @@ describe("ServerEncoder", () => {
         } catch(e) {
             return e;
         }
+    }
+
+    /**
+     * Simple method that parses the aws credentials file in to a map.
+     * It only supports the credentials like so:
+     * 
+     * [default]
+     * "key" = "value"
+     * "key2" = "value2"
+     */
+    function parseCreds(creds: string): Map<string, string> {
+        let map: Map<string, string> = new Map<string, string>();
+        
+        let keyValueString: string = creds.replace(/\[.*\]/g, " "); // Remove the block.
+        let lines: string[] = keyValueString.split(os.EOL);
+
+        for (var i = 0; i < lines.length; ++i) {
+            if (lines[i].trim().match(/^\w+\s*=\s*\w+/)) {
+                let split: string[] = lines[i].split("=");
+                map.set(split[0].trim(), split[1].trim());
+            }
+        }
+        return map;
     }
 });

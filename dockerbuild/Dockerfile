@@ -1,20 +1,15 @@
-FROM bespoken/centos-ffmpeg:latest
+FROM bespoken/encoder:latest
 
-## Installing npm and node.js on centos
-RUN mkdir -p /usr/node
-WORKDIR /usr/node
-RUN curl --silent --location https://rpm.nodesource.com/setup_6.x | bash
-RUN yum -y install nodejs
+WORKDIR /opt/bespoken/encoder
 
-## create directory for server sources
-RUN mkdir -p /usr/src/bespoken/encoder/
-WORKDIR /usr/src/bespoken/encoder/
+RUN git pull https://github.com/XappMedia/XappAlexaEncoder.git
 
-# App dependencies
-COPY ./package.json /usr/src/bespoken/encoder/
+WORKDIR /opt/bespoken/encoder/server
+
 RUN npm install
 
-COPY . /usr/src/bespoken/encoder/
+RUN ./node_modules/typescript/bin/tsc -p .
 
 EXPOSE 8080
-CMD node /usr/src/bespoken/encoder/index.js
+
+CMD node /opt/bespoken/encoder/server/outputs/source/main/index.js

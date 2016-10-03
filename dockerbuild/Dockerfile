@@ -1,10 +1,12 @@
-FROM bespoken/encoder:latest
+FROM xappmedia/bespoken-encoder:latest
 
-WORKDIR /opt/bespoken/encoder
+WORKDIR /opt/bespoken/BespokenEncoder
 
-RUN git pull https://github.com/XappMedia/XappAlexaEncoder.git
+RUN ls -l
 
-WORKDIR /opt/bespoken/encoder/server
+RUN git pull
+
+WORKDIR ./server
 
 RUN npm install
 
@@ -12,4 +14,4 @@ RUN ./node_modules/typescript/bin/tsc -p .
 
 EXPOSE 8080
 
-CMD node /opt/bespoken/encoder/server/outputs/source/main/index.js
+CMD node /opt/bespoken/BespokenEncoder/server/outputs/source/main/index.js

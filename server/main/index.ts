@@ -12,8 +12,6 @@ let server = http.createServer(function (request: http.IncomingMessage, response
     let method = request.method;
     let url = request.url;
     let headers = request.headers;
-    console.info("method = " + method + " url = " + url);
-    console.info(headers);
 
     request.on("error", function (err: Error) {
         console.error(err);
@@ -26,9 +24,11 @@ let server = http.createServer(function (request: http.IncomingMessage, response
         console.error("There was an error sending the response.");
     });
 
-    if (request.method === "POST" && request.url === "/encode") {
-        console.info("going in");
+    if (request.url === "/health") {
 
+        response.statusCode = 200;
+        
+    } else if (request.method === "POST" && request.url === "/encode") {
         let body: Array<string | Buffer> = [];
 
         request.on("data", function(chunk) {

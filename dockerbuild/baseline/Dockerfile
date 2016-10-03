@@ -9,14 +9,13 @@ RUN curl --silent --location https://rpm.nodesource.com/setup_6.x | bash
 RUN yum -y install nodejs
 
 ## create directory for server sources
-RUN mkdir -p /opt/bespoken/encoder
-WORKDIR /opt/bespoken/encoder
+RUN mkdir -p /opt/bespoken
+WORKDIR /opt/bespoken
 
 ## create and pull master for initial build.
-RUN git init .
-RUN git pull https://github.com/XappMedia/XappAlexaEncoder.git
+RUN git clone https://github.com/XappMedia/BespokenEncoder.git
 
-WORKDIR ./server
+WORKDIR BespokenEncoder/server
 
 RUN npm install
 

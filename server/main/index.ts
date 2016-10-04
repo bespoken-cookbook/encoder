@@ -24,9 +24,10 @@ let server = http.createServer(function (request: http.IncomingMessage, response
         console.error("There was an error sending the response.");
     });
 
-    if (request.url === "/health") {
-
+    if (request.method === "GET" && request.url === "/") {
+        // health check
         response.statusCode = 200;
+        response.end();
         
     } else if (request.method === "POST" && request.url === "/encode") {
         let body: Array<string | Buffer> = [];

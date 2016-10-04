@@ -66,8 +66,7 @@ let server = http.createServer(function (request: http.IncomingMessage, response
     }
 });
 
-console.info("Server is listening on port 8080.");
-server.listen(8080);
+server.listen(9200);
 
 function checkHeaders(headers: any, response: http.ServerResponse) {
     checkParameter(headers[PARAM_SOURCE_URL], response, "The header must include a \"sourceurl\" to the sound file.");

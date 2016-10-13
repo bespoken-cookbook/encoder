@@ -41,12 +41,12 @@ describe("ServerEncoder", () => {
 
     describe("encoder", () => {
         it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the S3 bucket.", (done: MochaDone) => {
-            let params: encoder.Encoder.Params = 
-                    { sourceUrl: AUDIO_URL, 
-                      targetBucket: TEST_BUCKET, 
-                      targetKey: TEST_KEY, 
-                      accessKeyId: ACCESS_ID, 
-                      accessSecret: SECRET }
+            let params: encoder.Encoder.Params = {
+                sourceUrl: AUDIO_URL, 
+                targetBucket: TEST_BUCKET, 
+                targetKey: TEST_KEY, 
+                accessKeyId: ACCESS_ID, 
+                accessSecret: SECRET }
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     done(err);
@@ -60,6 +60,28 @@ describe("ServerEncoder", () => {
                 }
             });
         });
+
+        it("Tests the full \"encoder\" that the item will be sent to the specified region.", (done: MochaDone) => {
+            let params: encoder.Encoder.Params = { 
+                sourceUrl: NO_FILE_URL, 
+                targetBucket: TEST_BUCKET, 
+                targetKey: TEST_KEY, 
+                accessKeyId: ACCESS_ID, 
+                accessSecret: SECRET,
+                region: "us-west-1" }
+            encoder.Encoder.encode(params, (err: Error, url: String) => {
+                if (err) {
+                    done(err);
+                } else {
+                    if (url == null) {
+                        done(Error("Url provided was null when no error was thrown."));
+                    } else {
+                        assert.equal(url, "https://s3.amazonaws.com/" + TEST_BUCKET + "/" + TEST_KEY);
+                        done();
+                    }
+                }
+            });
+        })
 
         it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the public S3 bucket.", (done: MochaDone) => {
             let params: encoder.Encoder.Params = {

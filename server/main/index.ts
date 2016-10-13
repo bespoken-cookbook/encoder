@@ -5,6 +5,7 @@ import { Encoder } from "./serverEncoder";
 const PARAM_SOURCE_URL: string = "sourceUrl".toLocaleLowerCase();
 const PARAM_TARGET_BUCKET: string = "targetBucket".toLocaleLowerCase();
 const PARAM_TARKET_KEY: string = "targetKey".toLocaleLowerCase();
+const PARAM_ACCESS_REGION: string = "targetRegion".toLocaleLowerCase();
 const PARAM_ACCESS_ID: string = "accessKeyID".toLocaleLowerCase();
 const PARAM_ACCESS_SECREY_KEY: string = "accesssecretKey".toLocaleLowerCase();
 
@@ -47,13 +48,15 @@ let server = http.createServer(function (request: http.IncomingMessage, response
             let targetKey: string = headers[PARAM_TARKET_KEY];
             let accessKeyId: string = headers[PARAM_ACCESS_ID];
             let accessSecret: string = headers[PARAM_ACCESS_SECREY_KEY];
+            let region: string = headers[PARAM_ACCESS_REGION];
 
             let params: Encoder.Params = { 
                 sourceUrl: musicSourceUrl, 
                 targetBucket: targetBucket, 
                 targetKey: targetKey, 
                 accessKeyId: accessKeyId, 
-                accessSecret: accessSecret }
+                accessSecret: accessSecret,
+                region: region }
             Encoder.encode(params, function(err: Error, url: string) {
                 console.info("ending");
 

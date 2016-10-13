@@ -41,7 +41,13 @@ describe("ServerEncoder", () => {
 
     describe("encoder", () => {
         it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the S3 bucket.", (done: MochaDone) => {
-            encoder.Encoder.encode(AUDIO_URL, TEST_BUCKET, TEST_KEY, ACCESS_ID, SECRET, (err: Error, url: String) => {
+            let params: encoder.Encoder.Params = 
+                    { sourceUrl: AUDIO_URL, 
+                      targetBucket: TEST_BUCKET, 
+                      targetKey: TEST_KEY, 
+                      accessKeyId: ACCESS_ID, 
+                      accessSecret: SECRET }
+            encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     done(err);
                 } else {
@@ -56,7 +62,11 @@ describe("ServerEncoder", () => {
         });
 
         it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the public S3 bucket.", (done: MochaDone) => {
-            encoder.Encoder.encode(AUDIO_URL, TEST_PUBLIC_BUCKET, TEST_KEY, null, null, (err: Error, url: String) => {
+            let params: encoder.Encoder.Params = {
+                sourceUrl: AUDIO_URL, 
+                targetBucket: TEST_PUBLIC_BUCKET, 
+                targetKey: TEST_KEY }
+            encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     done(err);
                 } else {
@@ -71,7 +81,13 @@ describe("ServerEncoder", () => {
         });
 
         it("Tests the full \"encoder\" method with a bad URL.  It should return an error with no URL.", (done: MochaDone) => {
-            encoder.Encoder.encode(IMAGE_URL, TEST_BUCKET, TEST_KEY, ACCESS_ID, SECRET, (err: Error, url: String) => {
+            let params: encoder.Encoder.Params = { 
+                sourceUrl: IMAGE_URL, 
+                targetBucket: TEST_BUCKET, 
+                targetKey: TEST_KEY, 
+                accessKeyId: ACCESS_ID, 
+                accessSecret: SECRET }
+            encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err != null) {
                     if (url) {
                         done(Error("A url of " + url + " was returned when \"null\" was expected."));
@@ -85,7 +101,13 @@ describe("ServerEncoder", () => {
         });
 
         it("Tests the full \"encoder\" will throw an error with bad credentials to a private repo.", (done: MochaDone) => {
-            encoder.Encoder.encode(AUDIO_URL, TEST_BUCKET, TEST_KEY, ACCESS_ID, "12345", (err: Error, url: String) => {
+            let params: encoder.Encoder.Params = { 
+                sourceUrl: AUDIO_URL, 
+                targetBucket: TEST_BUCKET, 
+                targetKey: TEST_KEY, 
+                accessKeyId: ACCESS_ID, 
+                accessSecret: "12345" }
+            encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     if (url) {
                         done(Error("An error was thrown but the URL was still return as " + url));
@@ -99,7 +121,13 @@ describe("ServerEncoder", () => {
         });
 
         it("Tests the full \"encoder\" with a remote URL to a file that doesn't exist. It should throw an error.", (done: MochaDone) => {
-            encoder.Encoder.encode(NO_FILE_URL, TEST_BUCKET, TEST_KEY, ACCESS_ID, SECRET, (err: Error, url: String) => {
+            let params: encoder.Encoder.Params = { 
+                sourceUrl: NO_FILE_URL, 
+                targetBucket: TEST_BUCKET, 
+                targetKey: TEST_KEY, 
+                accessKeyId: ACCESS_ID, 
+                accessSecret: SECRET }
+            encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     if (url) {
                         done(Error("An error was thrown but the URL was still return as " + url));

@@ -48,7 +48,13 @@ let server = http.createServer(function (request: http.IncomingMessage, response
             let accessKeyId: string = headers[PARAM_ACCESS_ID];
             let accessSecret: string = headers[PARAM_ACCESS_SECREY_KEY];
 
-            Encoder.encode(musicSourceUrl, targetBucket, targetKey, accessKeyId, accessSecret, function(err: Error, url: string) {
+            let params: Encoder.Params = { 
+                sourceUrl: musicSourceUrl, 
+                targetBucket: targetBucket, 
+                targetKey: targetKey, 
+                accessKeyId: accessKeyId, 
+                accessSecret: accessSecret }
+            Encoder.encode(params, function(err: Error, url: string) {
                 console.info("ending");
 
                 response.statusCode = (err) ? 400 : 200;

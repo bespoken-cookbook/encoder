@@ -12,26 +12,43 @@ import * as aws from "aws-sdk";
 export namespace Encoder {
 
     /**
+     * Parameter interface to use for the full `encode` method.
+     * 
+     * @param sourceUrl: The remote URL to the audio file to encode.
+     * @param targetBucket: Amazon S3 bucket to send the encoded audio to.
+     * @param targetKey: Name of the encoded file.
+     * @param accessKeyId: The access ID for the S3 bucket. Optional.
+     * @param accessSecret: The access Secret for the S3 bucket. Optional.
+     * @param region: The region for the S3 bucket.  Optional.  Will default to "us-east-1"
+     */
+    export interface Params {
+        sourceUrl: string,
+        targetBucket: string,
+        targetKey: string,
+        accessKeyId?: string,
+        accessSecret?: string,
+        region?: string
+    };
+
+    /**
      * A method that will encode the audio file at the given remote URL, encode it to an Amazon Echo compatiable audio file, then
      * send it off to the given Amazon S3 bucket with the given targetKey for the name.
      * 
-     * @param musicSourceUrl: The remote URL to the audio file to encode.
-     * @param targetBucket: Amazon S3 bucket to send the encoded audio to.
-     * @param targetKey: Name of the encoded file.
-     * @param accessKeyId: The access ID for the S3 bucket.
-     * @param accessSecret: The access Secret for the S3 bucket.
+     * @param params: The parameters for the encoding. 
      * @param callback: Callback to retrieve the error or the remote URL to the encoded audio.
+     *
      */
-    export function encode(musicSourceUrl: string, targetBucket: string, targetKey: string, accessKeyId: string, accessSecret: string, callback: (err: Error, url: String) => void) {
-            downloadAndEncode(musicSourceUrl, function (err: Error, mp3file: string) {
+    export function encode(params: Params, callback: (err: Error, url: String) => void) {
+            downloadAndEncode(params.sourceUrl, function (err: Error, mp3file: string) {
                 if (err != null) {
                     callback(err, null);
                 } else {
                     aws.config.update( {
-                        accessKeyId: accessKeyId,
-                        secretAccessKey: accessSecret
+                        accessKeyId: params.accessKeyId,
+                        secretAccessKey: params.accessSecret,
+                        region: (params.region) ? params.region : "us-east-1"
                     });
-                    sendOffToBucket(mp3file, targetBucket, targetKey, function(err: Error, url: string) {
+                    sendOffToBucket(mp3file, params.targetBucket, params.targetKey, function(err: Error, url: string) {
                         fs.unlink(mp3file);
                         callback(err, url);
                     });

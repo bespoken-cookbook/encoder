@@ -54,7 +54,11 @@ let server = http.createServer(function (request: http.IncomingMessage, response
                 response.statusCode = (err) ? 400 : 200;
                 response.statusMessage = (err) ? err.message : "OK";
                 response.setHeader("Content-Type", "text/plain");
-                response.write(url);
+                
+                if (url) {
+                    response.write(url);
+                }
+
                 response.end();
             });
         });

@@ -97,6 +97,20 @@ describe("ServerEncoder", () => {
                 }
             });
         });
+
+        it("Tests the full \"encoder\" with a remote URL to a file that doesn't exist. It should throw an error.", (done: MochaDone) => {
+            encoder.Encoder.encode(NO_FILE_URL, TEST_BUCKET, TEST_KEY, ACCESS_ID, SECRET, (err: Error, url: String) => {
+                if (err) {
+                    if (url) {
+                        done(Error("An error was thrown but the URL was still return as " + url));
+                    } else {
+                        done();
+                    }
+                } else {
+                    done(Error("No error was thrown and a url of " + url + " was returned."));
+                }
+            });
+        });
     });
 
     describe("convertFile", () => {
@@ -112,7 +126,6 @@ describe("ServerEncoder", () => {
                 }
             });
         });
-
 
         it("Attempts to convert an image file to a music file. It should fail and throw an error with no output path.", (done: MochaDone) => {
             encoder.Encoder.convertFile(IMAGE_FILE, (err: Error, outputPath: string) => {

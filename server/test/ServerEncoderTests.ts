@@ -11,6 +11,7 @@ const AUDIO_FILE: string = __dirname + path.sep + "assets" + path.sep + "audio.m
 const IMAGE_FILE: string = __dirname + path.sep + "assets" + path.sep + "img.png";
 const AUDIO_URL: string = "https://d2mxb5cuq6ityb.cloudfront.net/Demo-Geico.m4a";
 const IMAGE_URL: string = "https://xapp-wpengine.netdna-ssl.com/wp-content/themes/xapp/assets/images/logo.png";
+const NO_FILE_URL: string = "http://noooo.file.exists/Demo-Geico.m4a";
 
 const TEST_BUCKET: string = "bespoken/encoder/test";
 const TEST_PUBLIC_BUCKET: string = "bespoken/encoder/test";
@@ -144,6 +145,17 @@ describe("ServerEncoder", () => {
 
         it("Checks that a file is not downloaded or encoded if it is not a suitable type. It must produce an error.", (done: MochaDone) => {
             encoder.Encoder.downloadAndEncode(IMAGE_URL, (err: Error, outputPath: string) => {
+                if (!err) {
+                    done(Error("There was no error produced when there should have been. OutputPath = " + outputPath));
+                } else {
+                    assert.equal(outputPath, null, "An output path was produced when it should have been null: OutputPath = " + outputPath);
+                    done();
+                }
+            });
+        });
+
+        it("Checks that a file is not downloaded or encoded if the URL does not point to an actual file. It must produce an error.", (done: MochaDone) => {
+            encoder.Encoder.downloadAndEncode(NO_FILE_URL, (err: Error, outputPath: string) => {
                 if (!err) {
                     done(Error("There was no error produced when there should have been. OutputPath = " + outputPath));
                 } else {

@@ -129,7 +129,7 @@ export namespace Encoder {
         tmp.file(options, function (err: Error, inputPath: string, fileDescriptor: number) {
             let file: fs.WriteStream = fs.createWriteStream(inputPath);
 
-            networkGet(fileUrl, function (response: http.IncomingMessage) {
+            let positive = function (response: http.IncomingMessage) {
                 if (response.statusCode === 200) {
                     try {
                         response.pipe(file);
@@ -144,16 +144,26 @@ export namespace Encoder {
                 } else {
                     callback(Error("Could not retrieve file from " + fileUrl), null);
                 }
-            });
+            }
+
+            let negative = function(error: Error) {
+                callback(error, null);
+            }
+        
+            networkGet(fileUrl, positive, negative);
         });
     }
 
-    function networkGet(fileUrl: string, callback: (response: http.IncomingMessage) => void) {
+    function networkGet(fileUrl: string, callback: (response: http.IncomingMessage) => void, errorCallback: (error: Error) => void) {
         let isSecure: Boolean = fileUrl.startsWith("https");
         if (isSecure) {
-            https.get(fileUrl, callback);
+            https
+                .get(fileUrl, callback)
+                .on("error", errorCallback);
         } else {
-            http.get(fileUrl, callback);
+            http
+                .get(fileUrl, callback)
+                .on("error", errorCallback);
         }
     }
 

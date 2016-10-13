@@ -26,8 +26,7 @@ export namespace Encoder {
         targetBucket: string,
         targetKey: string,
         accessKeyId?: string,
-        accessSecret?: string,
-        region?: string
+        accessSecret?: string
     };
 
     /**
@@ -45,8 +44,7 @@ export namespace Encoder {
                 } else {
                     aws.config.update( {
                         accessKeyId: params.accessKeyId,
-                        secretAccessKey: params.accessSecret,
-                        region: (params.region) ? params.region : "us-east-1"
+                        secretAccessKey: params.accessSecret
                     });
                     sendOffToBucket(mp3file, params.targetBucket, params.targetKey, function(err: Error, url: string) {
                         fs.unlink(mp3file);

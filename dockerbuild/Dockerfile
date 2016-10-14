@@ -12,6 +12,6 @@ RUN npm install
 
 RUN ./node_modules/typescript/bin/tsc -p .
 
-EXPOSE 8080
+EXPOSE 9200
 
 CMD node /opt/bespoken/BespokenEncoder/server/outputs/source/main/index.js

@@ -4,6 +4,7 @@ node_js:
   - "6"
   - "5"
   - "4"
+install: ./travis-install-dependencies.sh
 script: ./travis-build.sh
 branches:
   only:

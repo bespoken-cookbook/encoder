@@ -90,7 +90,7 @@ export namespace Encoder {
     export function downloadAndEncode(sourceUrl: string, callback: (err: Error, outputPath: string) => void) {
         saveTempFile(sourceUrl, function(error: Error, fileUri: string) {
             if (error) {
-                callback(Error("Unable to download and save file at path " + sourceUrl), null);
+                callback(Error("Unable to download and save file at path " + sourceUrl + ". Error: " + error.message), null);
             } else {
                 convertFile(fileUri, function(error: Error, outputPath: string) {
                     fs.unlink(fileUri, (err: NodeJS.ErrnoException) => {
@@ -98,7 +98,7 @@ export namespace Encoder {
                             console.error("Unable to delete file " + fileUri + ". Error message: " + err.message);
                         }
                     });
-                    callback(Error("Unable to encode file downloaded from " + sourceUrl), outputPath);
+                    callback(error, outputPath);
                 });
             }
         });

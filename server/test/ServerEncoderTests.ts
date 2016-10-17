@@ -14,7 +14,7 @@ const IMAGE_URL: string = "https://xapp-wpengine.netdna-ssl.com/wp-content/theme
 /**
  * This is actually an AAC file but it is an m4a in disguise.  Testing a crash that was in the encoder that is caused by it. 
  */
-const AAC_AUDIO_FILE: string = "https://s3.dualstack.us-east-1.amazonaws.com/bespoken/encoded/ContentPromoPrompt.m4a";
+const AAC_AUDIO_FILE: string = "https://s3.amazonaws.com/bespoken/encoded/ContentPromoPromptBad.m4a";
 const NO_FILE_URL: string = "http://noooo.file.exists/Demo-Geico.m4a";
 
 const TEST_BUCKET: string = "bespoken/encoder/test";

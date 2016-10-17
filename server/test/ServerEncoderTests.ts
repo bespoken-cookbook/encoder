@@ -11,6 +11,10 @@ const AUDIO_FILE: string = __dirname + path.sep + "assets" + path.sep + "audio.m
 const IMAGE_FILE: string = __dirname + path.sep + "assets" + path.sep + "img.png";
 const AUDIO_URL: string = "https://d2mxb5cuq6ityb.cloudfront.net/Demo-Geico.m4a";
 const IMAGE_URL: string = "https://xapp-wpengine.netdna-ssl.com/wp-content/themes/xapp/assets/images/logo.png";
+/**
+ * This is actually an AAC file but it is an m4a in disguise.  Testing a crash that was in the encoder that is caused by it. 
+ */
+const AAC_AUDIO_FILE: string = "https://s3.dualstack.us-east-1.amazonaws.com/bespoken/encoded/ContentPromoPrompt.m4a";
 const NO_FILE_URL: string = "http://noooo.file.exists/Demo-Geico.m4a";
 
 const TEST_BUCKET: string = "bespoken/encoder/test";
@@ -76,6 +80,26 @@ describe("ServerEncoder", () => {
                         assert.equal(url, "https://s3.amazonaws.com/" + TEST_PUBLIC_BUCKET + "/" + TEST_KEY);
                         done();
                     }
+                }
+            });
+        });
+
+        it("Tests the full \"encoder\" method with an ACC file to ensure that it does not crash and throws an error.", (done: MochaDone) => {
+            let params: encoder.Encoder.Params = {
+                sourceUrl: AAC_AUDIO_FILE, 
+                targetBucket: TEST_BUCKET, 
+                targetKey: TEST_KEY, 
+                accessKeyId: ACCESS_ID, 
+                accessSecret: SECRET }
+            encoder.Encoder.encode(params, (err: Error, url: String) => {
+                if (err != null) {
+                    if (url) {
+                        done(Error("A url of " + url + " was returned when \"null\" was expected."));
+                    } else {
+                        done();
+                    }
+                } else {
+                    done(Error("No error was thrown and a url of " + url + " was returned."));
                 }
             });
         });
@@ -148,6 +172,20 @@ describe("ServerEncoder", () => {
                     done(err);
                 } else {
                     done(verifyFile(outputPath, fs.constants.F_OK));
+                }
+                if (outputPath) {
+                    fs.unlinkSync(outputPath);
+                }
+            });
+        });
+
+        it("Attempts to convert an aac file.  It should fail and throw an error with no output path.", (done: MochaDone) => {
+            encoder.Encoder.convertFile(AAC_AUDIO_FILE, (err: Error, outputPath: string) => {
+                if (!err) {
+                    done(Error("An error was supposed to be thrown but was not thrown."));
+                } else {
+                    assert.equal(outputPath, null, "An output path of " + outputPath + " was produced when it should have been null.");
+                    done();
                 }
                 if (outputPath) {
                     fs.unlinkSync(outputPath);

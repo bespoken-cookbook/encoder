@@ -47,7 +47,11 @@ export namespace Encoder {
                         secretAccessKey: params.accessSecret
                     });
                     sendOffToBucket(mp3file, params.targetBucket, params.targetKey, function(err: Error, url: string) {
-                        fs.unlink(mp3file);
+                        fs.unlink(mp3file, (err: NodeJS.ErrnoException) => {
+                            if (err) {
+                                console.error("Unable to delete mp3 file " + mp3file + ". Err message: " + err.message);
+                            }
+                        });
                         callback(err, url);
                     });
                 }
@@ -86,11 +90,15 @@ export namespace Encoder {
     export function downloadAndEncode(sourceUrl: string, callback: (err: Error, outputPath: string) => void) {
         saveTempFile(sourceUrl, function(error: Error, fileUri: string) {
             if (error) {
-                callback(error, null);
+                callback(Error("Unable to download and save file at path " + sourceUrl), null);
             } else {
                 convertFile(fileUri, function(error: Error, outputPath: string) {
-                    fs.unlink(fileUri);
-                    callback(error, outputPath);
+                    fs.unlink(fileUri, (err: NodeJS.ErrnoException) => {
+                        if (err) {
+                            console.error("Unable to delete file " + fileUri + ". Error message: " + err.message);
+                        }
+                    });
+                    callback(Error("Unable to encode file downloaded from " + sourceUrl), outputPath);
                 });
             }
         });
@@ -120,7 +128,11 @@ export namespace Encoder {
             cprocess.execFile("ffmpeg", ["-i", normalizedPath, "-codec:a", "libmp3lame", "-b:a", "48k", "-ar", "16000", "-af", "volume=3", outputPath],
                 function(error: Error, stdout: string, stderr: string) {
                     if (error) {
-                        fs.unlink(outputPath);
+                        fs.unlink(outputPath, (error: NodeJS.ErrnoException) => {
+                            if (error) {
+                                console.error("Unable to delete " + outputPath + ". Full error: " + error.message);
+                            }
+                        });
                         outputPath = null;
                     }
                     callback(error, outputPath);

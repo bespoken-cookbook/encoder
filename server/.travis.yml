@@ -1,0 +1,14 @@
+sudo: false
+language: node_js
+node_js:
+  - "6"
+  - "5"
+  - "4"
+script: npm run coveralls
+branches:
+  only:
+    - "master"
+cache:
+  directories:
+  - node_modules
+  - typings

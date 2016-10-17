@@ -37,6 +37,8 @@ describe("ServerEncoder", () => {
             var configs: Map<string, string> = parseCreds("default", configsString);
             ACCESS_ID = configs.get("aws_access_key_id");
             SECRET = configs.get("aws_secret_access_key");
+            console.info("ACCESS_ID = " + ACCESS_ID);
+            console.info("SECRET = " + SECRET);
         } catch(e) {
             console.error(e);
             throw Error("Unable to find aws credentials.  Please install and configure aws cli to run these tests.")
@@ -267,12 +269,11 @@ describe("ServerEncoder", () => {
         let lines: string[] = creds.split(os.EOL);
 
         for (var i = 0; i < lines.length; ++i) {
-            if (lines[i].trim().match("^\[" + profile + "\]")) {
-                if (lines[i].trim().match(/^\w+\s*=\s*\w+/)) {
+            if (!lines[i].trim().match(/^\[" + profile + "\]/)) {
+                if (lines[i].trim().match(/^\w+\s*=\s*.+\Z/)) {
                     let split: string[] = lines[i].split("=");
                     map.set(split[0].trim(), split[1].trim());
                 }
-                break;
             }
         }
         return map;

@@ -55,7 +55,6 @@ let server = http.createServer(function (request: http.IncomingMessage, response
                 accessKeyId: accessKeyId, 
                 accessSecret: accessSecret }
             Encoder.encode(params, function(err: Error, url: string) {
-                console.info("ending");
 
                 response.statusCode = (err) ? 400 : 200;
                 response.statusMessage = (err) ? err.message : "OK";

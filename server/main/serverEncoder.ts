@@ -135,6 +135,9 @@ export namespace Encoder {
                         });
                         outputPath = null;
                     }
+                    if (error) {
+                        error = Error("Unable to encode the file to mp3.");
+                    }
                     callback(error, outputPath);
                 });
         });

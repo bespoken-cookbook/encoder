@@ -18,7 +18,7 @@ const AAC_AUDIO_FILE: string = "https://s3.amazonaws.com/bespoken/encoded/Conten
 const NO_FILE_URL: string = "http://noooo.file.exists/Demo-Geico.m4a";
 
 const TEST_BUCKET: string = "bespoken/encoder/test";
-const TEST_PUBLIC_BUCKET: string = "bespoken/encoder/test";
+const TEST_PUBLIC_BUCKET: string = "bespoken/encoder/test_public";
 
 /**
  * Unit and integration tests for the ServerEncoder scope.  This requires aws keys in order to
@@ -131,6 +131,25 @@ describe("ServerEncoder", () => {
                 targetKey: TEST_KEY, 
                 accessKeyId: ACCESS_ID, 
                 accessSecret: "12345" }
+            encoder.Encoder.encode(params, (err: Error, url: String) => {
+                console.error(err.message);
+                if (err) {
+                    if (url) {
+                        done(Error("An error was thrown but the URL was still return as " + url));
+                    } else {
+                        done();
+                    }
+                } else {
+                    done(Error("No error was thrown and a url of " + url + " was returned."));
+                }
+            });
+        });
+
+        it("Tests the full \"encoder\" will throw an error with null credentials to a private repo.", (done: MochaDone) => {
+            let params: encoder.Encoder.Params = { 
+                sourceUrl: AUDIO_URL, 
+                targetBucket: TEST_BUCKET, 
+                targetKey: TEST_KEY }
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     if (url) {

@@ -1,9 +1,13 @@
 sudo: false
 language: node_js
+sudo: required
 node_js:
   - "6"
   - "5"
   - "4"
+before_install: 
+  - sudo apt-get -qq update
+  - sudo apt-get install -y ffmpeg
 install: ./travis-install-dependencies.sh
 script: ./travis-build.sh
 branches:

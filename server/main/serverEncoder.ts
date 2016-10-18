@@ -1,6 +1,4 @@
-// / <reference path="./typings/node.d.ts" />
-// / <reference path="./typings/tmp.d.ts" />
-// / <reference path="./typings/aws-sdk.d.ts" />
+/// <reference path="../typings/index.d.ts" />
 import * as http from "http";
 import * as https from "https";
 import * as fs from "fs";

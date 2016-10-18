@@ -1,4 +1,5 @@
-// / <reference path="./typings/node.d.ts" />
+/// <reference path="../typings/index.d.ts" />
+/// <reference path="../typings/tsd.d.ts" />
 import * as encoder from "../main/serverEncoder"
 import * as fs from "fs";
 import * as os from "os";

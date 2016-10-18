@@ -33,14 +33,9 @@ describe("ServerEncoder", () => {
     var SECRET: string = "";
 
     before(function() {
-        try {
-            let configs: Map<string, string> = getVariables();
-            ACCESS_ID = configs.get("aws_access_key_id");
-            SECRET = configs.get("aws_secret_access_key");
-        } catch(e) {
-            console.error(e);
-            throw Error("Unable to find aws credentials.  Please install and configure aws cli to run these tests.")
-        }
+        let configs: Map<string, string> = getVariables();
+        ACCESS_ID = configs.get("aws_access_key_id");
+        SECRET = configs.get("aws_secret_access_key");
     })
 
     describe("encoder", () => {
@@ -273,10 +268,7 @@ describe("ServerEncoder", () => {
     }
 
     function getVariables(): Map<string, string> {
-        var homeDirectory: string = os.homedir();
-        var configsString: string = fs.readFileSync(homeDirectory + "/.aws/credentials", "utf8");
-        var configs: Map<string, string> = parseCreds("default", configsString);
-
+        let configs: Map<string, string> = getVariablesFromFile();
         // Retrieving environment variables to override what's in the config file.
         if (process.env.AWS_KEY) {
             configs.set("aws_access_key_id", process.env.AWS_KEY);
@@ -287,6 +279,16 @@ describe("ServerEncoder", () => {
 
         return configs;
     } 
+
+    function getVariablesFromFile(): Map<string, string> {
+        try {
+            var homeDirectory: string = os.homedir();
+            var configsString: string = fs.readFileSync(homeDirectory + "/.aws/credentials", "utf8");
+            return parseCreds("default", configsString);
+        } catch(e) {
+            return new Map<string, string>();
+        }
+    }
 
     /**
      * Simple method that parses the aws credentials file in to a map.

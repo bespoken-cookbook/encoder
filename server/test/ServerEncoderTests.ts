@@ -22,8 +22,9 @@ const TEST_PUBLIC_BUCKET: string = "bespoken/encoder/test_public";
 
 /**
  * Unit and integration tests for the ServerEncoder scope.  This requires aws keys in order to
- * run. It will take the credentials from the aws cli from the "~/.aws" folder.  Currently it
- * will only take the default one. Multiple profile support would need to be added. 
+ * run. It will take the credentials either from the environment variables AWS_KEY and AWS_SECRET or 
+ * from aws cli from the "~/.aws" folder. The environment variables take
+ * precedence. Currently it will only take the default one. Multiple profile support would need to be added. 
  */
 describe("ServerEncoder", () => {
     var TEST_KEY: string = "testKey.mp3";
@@ -32,11 +33,10 @@ describe("ServerEncoder", () => {
 
     before(function() {
         try {
-            var homeDirectory: string = os.homedir();
-            var configsString: string = fs.readFileSync(homeDirectory + "/.aws/credentials", "utf8");
-            var configs: Map<string, string> = parseCreds("default", configsString);
+            let configs: Map<string, string> = getVariables();
             ACCESS_ID = configs.get("aws_access_key_id");
             SECRET = configs.get("aws_secret_access_key");
+            console.info("ACCESS_ID = " + ACCESS_ID + " SECRET = " + SECRET);
         } catch(e) {
             console.error(e);
             throw Error("Unable to find aws credentials.  Please install and configure aws cli to run these tests.")
@@ -272,6 +272,23 @@ describe("ServerEncoder", () => {
         }
     }
 
+    function getVariables(): Map<string, string> {
+        var homeDirectory: string = os.homedir();
+        var configsString: string = fs.readFileSync(homeDirectory + "/.aws/credentials", "utf8");
+        var configs: Map<string, string> = parseCreds("default", configsString);
+
+        // Retrieving environment variables to override what's in the config file.
+        if (process.env.AWS_KEY) {
+            configs.set("aws_access_key_id", process.env.AWS_KEY);
+        }
+        if (process.env.AWS_SECRET) {
+            console.info("GOT AWS_SECRET")
+            configs.set("aws_secret_access_key", process.env.AWS_SECRET);
+        }
+
+        return configs;
+    } 
+
     /**
      * Simple method that parses the aws credentials file in to a map.
      * It only supports the credentials like so:
@@ -279,10 +296,14 @@ describe("ServerEncoder", () => {
      * [profile]
      * "key" = "value"
      * "key2" = "value2"
+     * 
+     * @params profile The name of the profile to retrieve.
+     * @params creds The entire creds text string.
+     * 
+     * @return A map containing the keys and their values. 
      */
     function parseCreds(profile: string, creds: string): Map<string, string> {
         let map: Map<string, string> = new Map<string, string>();
-        
         let lines: string[] = creds.split(os.EOL);
 
         for (var i = 0; i < lines.length; ++i) {

@@ -36,7 +36,6 @@ describe("ServerEncoder", () => {
             let configs: Map<string, string> = getVariables();
             ACCESS_ID = configs.get("aws_access_key_id");
             SECRET = configs.get("aws_secret_access_key");
-            console.info("ACCESS_ID = " + ACCESS_ID + " SECRET = " + SECRET);
         } catch(e) {
             console.error(e);
             throw Error("Unable to find aws credentials.  Please install and configure aws cli to run these tests.")
@@ -282,7 +281,6 @@ describe("ServerEncoder", () => {
             configs.set("aws_access_key_id", process.env.AWS_KEY);
         }
         if (process.env.AWS_SECRET) {
-            console.info("GOT AWS_SECRET")
             configs.set("aws_secret_access_key", process.env.AWS_SECRET);
         }
 

@@ -134,6 +134,7 @@ export namespace Encoder {
                         outputPath = null;
                     }
                     if (error) {
+                        console.error("Error thrown: " + error.message);
                         error = Error("Unable to encode the file to mp3.");
                     }
                     callback(error, outputPath);
@@ -167,6 +168,7 @@ export namespace Encoder {
                             callback(null, inputPath);
                         });
                     } catch (e) {
+                        console.error("Error thrown: " + e.message);
                         callback(e, null);
                     }
                 } else {
@@ -175,6 +177,9 @@ export namespace Encoder {
             }
 
             let negative = function(error: Error) {
+                if (error) {
+                    console.error("Error thrown: " + error.message);
+                }
                 callback(error, null);
             }
         

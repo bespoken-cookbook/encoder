@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "repository":"https://github.com/XappMedia/BespokenEncoder.git",
   "devDependencies": {
-    "typescript":"^2.0.3",
+    "aws-sdk":"^2.6.6",
     "coveralls": "^2.11.14",
     "mocha": "^3.1.0",
-    "tmp":"^0.0.29",
-    "aws-sdk":"^2.6.6",
+    "mocha-lcov-reporter": "^1.2.0",
     "remap-istanbul": "^0.6.4",
-    "typings": "^1.3.2",
-    "mocha-lcov-reporter": "^1.2.0"
+    "tmp":"^0.0.29",
+    "typescript":"^2.0.3",
+    "typings": "^1.3.2"
   },
   "scripts": {
     "build": "tsc -p . && cp -rf test/assets outputs/source/test/",

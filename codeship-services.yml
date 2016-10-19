@@ -1,0 +1,5 @@
+app:
+  build:
+    image: node:6.3.0
+    dockerfile_path: ./dockerbuild/Dockerfile
+  encrypted_env_file: deployment.env.encrypted

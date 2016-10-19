@@ -1,9 +1,17 @@
+# system
 .DS_Store
 .DS_Store?
 ._*
-*.log
 
-build/
+# generated
 node_modules/
 outputs/
+
+*.log
+
+# codeship key for encrypting builds
+codeship.aes
+
+# codeship deployment environment variables
+deployment.env
 

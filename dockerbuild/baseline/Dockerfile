@@ -15,7 +15,7 @@ WORKDIR /opt/bespoken
 ## create and pull master for initial build.
 RUN git clone https://github.com/XappMedia/BespokenEncoder.git
 
-WORKDIR BespokenEncoder/server
+WORKDIR BespokenEncoder/
 
 RUN npm install
 

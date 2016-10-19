@@ -1,3 +1,4 @@
-/// <reference path="globals/node/node.d.ts" />
-/// <reference path="globals/node/tmp.d.ts" />
-/// <reference path="globals/node/aws-sdk.d.ts" />
+/// <reference path="globals/aws-sdk/index.d.ts" />
+/// <reference path="globals/mocha/index.d.ts" />
+/// <reference path="globals/node/index.d.ts" />
+/// <reference path="globals/tmp/index.d.ts" />

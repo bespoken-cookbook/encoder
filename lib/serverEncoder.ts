@@ -112,7 +112,7 @@ export namespace Encoder {
         let normalizedPath: string = path.normalize(inputFile);
 
         // Retrieving a tmp name for the outputPath.
-        let options: tmp.FileOptions = {
+        let options: tmp.SimpleOptions = {
             postfix: ".mp3"
         };
 
@@ -150,7 +150,7 @@ export namespace Encoder {
      */
     function saveTempFile(fileUrl: string, callback: (err: Error, fileUri: string) => void) {
         let postfix: string = getExtension(fileUrl, ".tmp");
-        let options: tmp.FileOptions = {
+        let options: tmp.SimpleOptions = {
             postfix: getExtension(fileUrl, ".tmp"),
             keep: true
         };

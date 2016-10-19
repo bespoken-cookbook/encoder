@@ -9,8 +9,8 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y ffmpeg
   - ffmpeg -version
-install: ./travis-install-dependencies.sh
-script: ./travis-build.sh
+install: npm install
+script: npm run build && npm run coveralls
 branches:
   only:
     - "master"

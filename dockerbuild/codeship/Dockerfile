@@ -23,5 +23,3 @@ RUN npm install
 RUN node ./node_modules/typings/dist/bin.js install
 ## Build master
 RUN ./node_modules/typescript/bin/tsc -p .
-
-CMD [ "npm", "start" ]

@@ -18,6 +18,6 @@
     "test": "./node_modules/mocha/bin/mocha ./outputs/source/test",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha ./outputs/source/test -- -R spec && ./node_modules/remap-istanbul/bin/remap-istanbul -i ./outputs/reports/coverage/coverage.json -o ./outputs/reports/coverage/ts-report -t html && ./node_modules/.bin/remap-istanbul -i ./outputs/reports/coverage/coverage.json -t lcovonly > ./outputs/reports/coverage/lcov-ts.info",
     "coveralls": "npm run coverage && ./node_modules/coveralls/bin/coveralls.js < ./outputs/reports/coverage/lcov-ts.info",
-    "lint":"tslint ./main/**/*.ts"
+    "lint":"tslint ./lib/**/*.ts"
   }
 }

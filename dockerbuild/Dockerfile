@@ -14,4 +14,4 @@ RUN ./node_modules/typescript/bin/tsc -p .
 
 EXPOSE 9200
 
-CMD node /opt/bespoken/BespokenEncoder/server/outputs/source/main/index.js
+CMD node /opt/bespoken/BespokenEncoder/server/outputs/source/lib/index.js

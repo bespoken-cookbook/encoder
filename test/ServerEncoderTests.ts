@@ -1,6 +1,6 @@
 /// <reference path="../typings/index.d.ts" />
 /// <reference path="../typings/tsd.d.ts" />
-import * as encoder from "../main/serverEncoder"
+import * as encoder from "../lib/serverEncoder"
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";

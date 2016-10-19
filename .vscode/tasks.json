@@ -40,7 +40,7 @@
         {
             "taskName": "BuildAndStartServer",
             "args": [
-                "tsc -p . && node ./outputs/source/main/index.js"
+                "tsc -p . && node ./outputs/source/lib/index.js"
             ],
             "isBuildCommand": true,
             "suppressTaskName": true

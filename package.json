@@ -16,7 +16,7 @@
     "build": "typings install && tsc -p . && cp -rf test/assets outputs/source/test/",
     "prestart": "npm run build",
     "start": "node outputs/source/lib/index.js",
-    "pretest": "npm start",
+    "pretest": "npm run build",
     "test": "./node_modules/mocha/bin/mocha ./outputs/source/test",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha ./outputs/source/test -- -R spec && ./node_modules/remap-istanbul/bin/remap-istanbul -i ./outputs/reports/coverage/coverage.json -o ./outputs/reports/coverage/ts-report -t html && ./node_modules/.bin/remap-istanbul -i ./outputs/reports/coverage/coverage.json -t lcovonly > ./outputs/reports/coverage/lcov-ts.info",
     "coveralls": "npm run coverage && ./node_modules/coveralls/bin/coveralls.js < ./outputs/reports/coverage/lcov-ts.info",

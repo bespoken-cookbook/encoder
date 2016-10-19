@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/XappMedia/BespokenEncoder.svg?branch=master)](https://travis-ci.org/XappMedia/BespokenEncoder)
+[![Coverage Status](https://coveralls.io/repos/github/XappMedia/BespokenEncoder/badge.svg?branch=master)](https://coveralls.io/github/XappMedia/BespokenEncoder?branch=master)
+
 # BespokenEncoder
 
 A simple microservice for encoding raw audio to MP3.

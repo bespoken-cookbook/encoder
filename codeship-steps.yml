@@ -1,6 +1,6 @@
 - name: Test
   service: app
-  command: npm run coveralls
+  command: npm run test
   encrypted_dockercfg_path: dockercfg.encrypted
 
 - name: DockerHub push

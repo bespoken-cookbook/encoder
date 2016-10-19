@@ -19,5 +19,7 @@ WORKDIR BespokenEncoder/
 
 RUN npm install
 
+## build typings
+RUN node ./node_modules/typings/dist/bin.js install
 ## Build master
 RUN ./node_modules/typescript/bin/tsc -p .

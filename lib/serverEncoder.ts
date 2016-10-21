@@ -1,6 +1,7 @@
 /// <reference path="../typings/index.d.ts" />
 import * as http from "http";
 import * as https from "https";
+import * as request from "request";
 import * as fs from "fs";
 import * as tmp from "tmp";
 import * as path from "path";
@@ -188,16 +189,9 @@ export namespace Encoder {
     }
 
     function networkGet(fileUrl: string, callback: (response: http.IncomingMessage) => void, errorCallback: (error: Error) => void) {
-        let isSecure: Boolean = fileUrl.startsWith("https");
-        if (isSecure) {
-            https
-                .get(fileUrl, callback)
-                .on("error", errorCallback);
-        } else {
-            http
-                .get(fileUrl, callback)
-                .on("error", errorCallback);
-        }
+        request.get(fileUrl)
+            .on("response", callback)
+            .on("error", errorCallback);
     }
 
     function getExtension(url: string, fallback: string): string {

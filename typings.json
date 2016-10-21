@@ -1,6 +1,7 @@
 {
   "globalDependencies": {
     "aws-sdk": "registry:dt/aws-sdk#0.0.0+20160927141703",
+    "form-data": "registry:dt/form-data#0.0.0+20160724024111",
     "mocha": "registry:dt/mocha#2.2.5+20160619032855",
     "node": "registry:dt/node#6.0.0+20160923124626",
     "request": "registry:dt/request#0.0.0+20160726020908",

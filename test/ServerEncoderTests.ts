@@ -11,6 +11,7 @@ const TEST_FOLDER: string = "testFolder" + path.sep;
 const AUDIO_FILE: string = __dirname + path.sep + "assets" + path.sep + "audio.m4a";
 const IMAGE_FILE: string = __dirname + path.sep + "assets" + path.sep + "img.png";
 const AUDIO_URL: string = "https://d2mxb5cuq6ityb.cloudfront.net/Demo-Geico.m4a";
+const REDIRECT_AUDIO_URL: string = "http://traffic.libsyn.com/bespoken/Introduction.mp3";
 const IMAGE_URL: string = "https://xapp-wpengine.netdna-ssl.com/wp-content/themes/xapp/assets/images/logo.png";
 /**
  * This is actually an AAC file but it is an m4a in disguise.  Testing a crash that was in the encoder that is caused by it. 
@@ -42,6 +43,27 @@ describe("ServerEncoder", () => {
         it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the S3 bucket.", (done: MochaDone) => {
             let params: encoder.Encoder.Params = {
                 sourceUrl: AUDIO_URL, 
+                targetBucket: TEST_BUCKET, 
+                targetKey: TEST_KEY, 
+                accessKeyId: ACCESS_ID, 
+                accessSecret: SECRET }
+            encoder.Encoder.encode(params, (err: Error, url: String) => {
+                if (err) {
+                    done(err);
+                } else {
+                    if (url == null) {
+                        done(Error("Url provided was null when no error was thrown."));
+                    } else {
+                        assert.equal(url, "https://s3.amazonaws.com/" + TEST_BUCKET + "/" + TEST_KEY);
+                        done();
+                    }
+                }
+            });
+        });
+
+        it("Tests the full \"encoder\" method with valid input to a redirect URL to ensure that the file has been sent to the S3 bucket.", (done: MochaDone) => {
+            let params: encoder.Encoder.Params = {
+                sourceUrl: REDIRECT_AUDIO_URL, 
                 targetBucket: TEST_BUCKET, 
                 targetKey: TEST_KEY, 
                 accessKeyId: ACCESS_ID, 
@@ -225,6 +247,19 @@ describe("ServerEncoder", () => {
     describe("downloadAndEncode", () => {
         it("Checks that an audio file is downloaded and encoded to a readable temporary mp3 without error.", (done: MochaDone) => {
             encoder.Encoder.downloadAndEncode(AUDIO_URL, (err: Error, outputPath: string) => {
+                if (err) {
+                    done(err);
+                } else {
+                    done(verifyFile(outputPath, fs.constants.F_OK | fs.constants.W_OK));
+                }
+                if (outputPath) {
+                    fs.unlinkSync(outputPath);
+                }
+            });
+        });
+
+        it("Checks that an audio file is downloaded from a redirect url and encoded to a readable temporary mp3 without error.", (done: MochaDone) => {
+            encoder.Encoder.downloadAndEncode(REDIRECT_AUDIO_URL, (err: Error, outputPath: string) => {
                 if (err) {
                     done(err);
                 } else {

@@ -5,6 +5,7 @@
   "devDependencies": {
     "aws-sdk":"^2.6.6",
     "coveralls": "^2.11.14",
+    "request":"2.75.0",
     "mocha": "^3.1.0",
     "mocha-lcov-reporter": "^1.2.0",
     "remap-istanbul": "^0.6.4",

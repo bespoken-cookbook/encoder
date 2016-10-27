@@ -1,4 +1,10 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-     "typescript.tsdk": "/Users/chrisdietz/node_modules/typescript/lib"
+     "typescript.tsdk": "/Users/chrisdietz/node_modules/typescript/lib",
+     "files.exclude": {
+         "**/.git*": true,
+         "**/.DS_Store": true,
+         "outputs/": true,
+         "node_modules/":true
+     }
 }

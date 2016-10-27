@@ -323,6 +323,17 @@ describe("ServerEncoder", () => {
                 }
             });
         });
+
+        it("Checks that a file is not downloaded or encoded if the URL is null. It must produce an error.", (done: MochaDone) => {
+            encoder.Encoder.downloadAndEncode(null, (err: Error, outputPath: string) => {
+                if (!err) {
+                    done(Error("There was no error produced when there should have been. OutputPath = " + outputPath));
+                } else {
+                    assert.equal(outputPath, null, "An output path was produced when it should have been null: OutputPath = " + outputPath);
+                    done();
+                }
+            });
+        });
     });
 
     function verifyFile(path: string, mode: number): Error {

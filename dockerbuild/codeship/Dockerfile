@@ -15,7 +15,7 @@ WORKDIR /opt/bespoken
 ## create and pull master for initial build.
 RUN git clone https://github.com/bespoken/encoder.git
 
-WORKDIR BespokenEncoder/
+WORKDIR encoder/
 
 RUN npm install
 

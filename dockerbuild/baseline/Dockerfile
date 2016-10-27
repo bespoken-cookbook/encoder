@@ -13,7 +13,7 @@ RUN mkdir -p /opt/bespoken
 WORKDIR /opt/bespoken
 
 ## create and pull master for initial build.
-RUN git clone https://github.com/XappMedia/BespokenEncoder.git
+RUN git clone https://github.com/bespoken/encoder.git
 
 WORKDIR BespokenEncoder/
 

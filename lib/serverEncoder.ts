@@ -21,11 +21,11 @@ export namespace Encoder {
      * @param region: The region for the S3 bucket.  Optional.  Will default to "us-east-1"
      */
     export interface Params {
-        sourceUrl: string,
-        targetBucket: string,
-        targetKey: string,
-        accessKeyId?: string,
-        accessSecret?: string
+        sourceUrl: string;
+        targetBucket: string;
+        targetKey: string;
+        accessKeyId?: string;
+        accessSecret?: string;
     };
 
     /**
@@ -175,15 +175,15 @@ export namespace Encoder {
                 } else {
                     callback(Error("Could not retrieve file from " + fileUrl), null);
                 }
-            }
+            };
 
             let negative = function(error: Error) {
                 if (error) {
                     console.error("Error thrown: " + error.message);
                 }
                 callback(error, null);
-            }
-        
+            };
+
             networkGet(fileUrl, positive, negative);
         });
     }
@@ -198,7 +198,7 @@ export namespace Encoder {
         }
     }
 
-    function isWebUrl(url: string): Boolean{
+    function isWebUrl(url: string): Boolean {
         if (!url) {
             return false;
         }

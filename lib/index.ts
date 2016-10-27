@@ -28,7 +28,7 @@ let server = http.createServer(function (request: http.IncomingMessage, response
         // health check
         response.statusCode = 200;
         response.end();
-        
+
     } else if (request.method === "POST" && request.url === "/encode") {
         let body: Array<string | Buffer> = [];
 
@@ -48,18 +48,18 @@ let server = http.createServer(function (request: http.IncomingMessage, response
             let accessKeyId: string = headers[PARAM_ACCESS_ID];
             let accessSecret: string = headers[PARAM_ACCESS_SECREY_KEY];
 
-            let params: Encoder.Params = { 
-                sourceUrl: musicSourceUrl, 
-                targetBucket: targetBucket, 
-                targetKey: targetKey, 
-                accessKeyId: accessKeyId, 
-                accessSecret: accessSecret }
+            let params: Encoder.Params = {
+                sourceUrl: musicSourceUrl,
+                targetBucket: targetBucket,
+                targetKey: targetKey,
+                accessKeyId: accessKeyId,
+                accessSecret: accessSecret };
             Encoder.encode(params, function(err: Error, url: string) {
 
                 response.statusCode = (err) ? 400 : 200;
                 response.statusMessage = (err) ? err.message : "OK";
                 response.setHeader("Content-Type", "text/plain");
-                
+
                 if (url) {
                     response.write(url);
                 }

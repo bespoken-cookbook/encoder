@@ -189,9 +189,20 @@ export namespace Encoder {
     }
 
     function networkGet(fileUrl: string, callback: (response: http.IncomingMessage) => void, errorCallback: (error: Error) => void) {
-        request.get(fileUrl)
-            .on("response", callback)
-            .on("error", errorCallback);
+        if (isWebUrl(fileUrl)) {
+            request.get(fileUrl)
+                .on("response", callback)
+                .on("error", errorCallback);
+        } else {
+            errorCallback(Error("The url " + fileUrl + " is not a supported URI."));
+        }
+    }
+
+    function isWebUrl(url: string): Boolean{
+        if (!url) {
+            return false;
+        }
+        return /^((http[s]?|ftp):\/{2})([\w-]+\.)+(\w+)(:\d{1,5})?\/?(\w*\/?)*(\.\w*)?(\??.*)$/.test(url);
     }
 
     function getExtension(url: string, fallback: string): string {

@@ -162,6 +162,26 @@ describe("ServerEncoder", () => {
             });
         });
 
+        it("Checks that the full \"encoder\" will throw an error when attempting to download a local file instead of a web link.", (done: MochaDone) => {
+            let params: encoder.Encoder.Params = {
+                sourceUrl: IMAGE_FILE,
+                targetBucket: TEST_BUCKET,
+                targetKey: TEST_KEY,
+                accessKeyId: ACCESS_ID,
+                accessSecret: "12345"};
+            encoder.Encoder.encode(params, (err: Error, url: String) => {
+                if (err) {
+                    if (url) {
+                        done(Error("An error was thrown but the URL was still return as " + url));
+                    } else {
+                        done();
+                    }
+                } else {
+                    done(Error("No error was thrown and a url of " + url + " was returned."));
+                }
+            });
+        });
+
         it("Tests the full \"encoder\" will throw an error with null credentials to a private repo.", (done: MochaDone) => {
             let params: encoder.Encoder.Params = { 
                 sourceUrl: AUDIO_URL, 
@@ -267,6 +287,17 @@ describe("ServerEncoder", () => {
                 }
                 if (outputPath) {
                     fs.unlinkSync(outputPath);
+                }
+            });
+        });
+
+        it("Checks that an error is thrown when attempting to download a file.", (done: MochaDone) => {
+            encoder.Encoder.downloadAndEncode(IMAGE_FILE, (err: Error, outputPath: string) => {
+                if (!err) {
+                    done();
+                } else {
+                    assert.equal(outputPath, null, "An output path was produced when it should have been null: OutputPath = " + outputPath);
+                    done();
                 }
             });
         });

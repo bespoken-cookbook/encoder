@@ -1,6 +1,6 @@
-FROM xappmedia/bespoken-encoder:latest
+FROM bespoken/bespoken-encoder:latest
 
-WORKDIR /opt/bespoken/BespokenEncoder
+WORKDIR /opt/bespoken/encoder
 
 RUN ls -l
 

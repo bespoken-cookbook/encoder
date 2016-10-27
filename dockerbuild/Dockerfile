@@ -1,4 +1,12 @@
-FROM xappmedia/bespoken-encoder:latest
+FROM bespoken/bespoken-encoder:latest
+
+WORKDIR /opt/
+
+RUN ls -l
+
+WORKDIR bespoken/
+
+RUN ls -l
 
 WORKDIR /opt/bespoken/encoder
 

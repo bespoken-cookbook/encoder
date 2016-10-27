@@ -1,9 +1,15 @@
 [![Build Status](https://travis-ci.org/XappMedia/BespokenEncoder.svg?branch=master)](https://travis-ci.org/XappMedia/BespokenEncoder)
 [![Coverage Status](https://coveralls.io/repos/github/XappMedia/BespokenEncoder/badge.svg?branch=master)](https://coveralls.io/github/XappMedia/BespokenEncoder?branch=master)
 
-# BespokenEncoder
+# cncoder
 
 A simple microservice for encoding raw audio to MP3.
+
+# Dependencies
+
+This project must have ffmpeg install on the machine to run.
+
+https://www.ffmpeg.org/
 
 # API
 

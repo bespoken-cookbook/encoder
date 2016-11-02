@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/XappMedia/BespokenEncoder.svg?branch=master)](https://travis-ci.org/XappMedia/BespokenEncoder)
+[![Build Status](https://travis-ci.org/bespoken/encoder.svg?branch=master)](https://travis-ci.org/bespoken/encoder)
 [![Coverage Status](https://coveralls.io/repos/github/XappMedia/BespokenEncoder/badge.svg?branch=master)](https://coveralls.io/github/XappMedia/BespokenEncoder?branch=master)
 
-# cncoder
+# encoder
 
 A simple microservice for encoding raw audio to MP3.
 

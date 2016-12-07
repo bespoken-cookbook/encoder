@@ -3,6 +3,8 @@
 .DS_Store?
 ._*
 
+.idea/
+
 # generated
 node_modules/
 outputs/

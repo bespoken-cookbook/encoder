@@ -34,8 +34,9 @@ describe("ServerEncoder", () => {
     let SECRET: string = "";
 
     before(function() {
+        this.timeout(10000);
         // Use the AWS credentials if available from credentials file or environment (via the AWS SDK config)
-        if (AWS.config.credentials !== null) {
+        if (AWS.config.credentials !== undefined && AWS.config.credentials !== null) {
             ACCESS_ID = AWS.config.credentials.accessKeyId;
             SECRET = AWS.config.credentials.secretAccessKey;
         }
@@ -50,7 +51,7 @@ describe("ServerEncoder", () => {
     });
 
     describe("encoder", function () {
-        this.timeout(30000);
+        this.timeout(60000);
 
         it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the S3 bucket.", (done: MochaDone) => {
             let params: encoder.Encoder.Params = {

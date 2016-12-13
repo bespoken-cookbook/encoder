@@ -1,17 +1,22 @@
 {
   "name": "alexa-encoder",
   "version": "0.0.1",
-  "repository":"https://github.com/XappMedia/BespokenEncoder.git",
+  "repository": "https://github.com/XappMedia/BespokenEncoder.git",
+  "engines": {
+    "node": ">= 6.3.1"
+  },
   "devDependencies": {
-    "aws-sdk":"^2.6.6",
+    "aws-sdk": "^2.6.6",
     "coveralls": "^2.11.14",
-    "form-data":"^2.1.1",
+    "form-data": "^2.1.1",
     "mocha": "^3.1.0",
     "mocha-lcov-reporter": "^1.2.0",
-    "request":"^2.75.0",
     "remap-istanbul": "^0.6.4",
-    "tmp":"^0.0.29",
-    "typescript":"^2.0.3",
+    "request": "^2.75.0",
+    "tmp": "^0.0.29",
+    "ts-node": "^1.7.0",
+    "tslint": "^4.0.2",
+    "typescript": "^2.0.3",
     "typings": "^1.3.2"
   },
   "scripts": {
@@ -22,6 +27,6 @@
     "test": "./node_modules/mocha/bin/mocha ./outputs/source/test",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha ./outputs/source/test -- -R spec && ./node_modules/remap-istanbul/bin/remap-istanbul -i ./outputs/reports/coverage/coverage.json -o ./outputs/reports/coverage/ts-report -t html && ./node_modules/.bin/remap-istanbul -i ./outputs/reports/coverage/coverage.json -t lcovonly > ./outputs/reports/coverage/lcov-ts.info",
     "coveralls": "npm run coverage && ./node_modules/coveralls/bin/coveralls.js < ./outputs/reports/coverage/lcov-ts.info",
-    "lint":"tslint ./lib/**/*.ts"
+    "lint": "tslint ./lib/**/*.ts"
   }
 }

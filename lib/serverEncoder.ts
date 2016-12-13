@@ -1,6 +1,5 @@
 /// <reference path="../typings/index.d.ts" />
 import * as http from "http";
-import * as https from "https";
 import * as request from "request";
 import * as fs from "fs";
 import * as tmp from "tmp";
@@ -22,11 +21,12 @@ export namespace Encoder {
      */
     export interface Params {
         sourceUrl: string;
+        filterVolume: number;
         targetBucket: string;
         targetKey: string;
         accessKeyId?: string;
         accessSecret?: string;
-    };
+    }
 
     /**
      * A method that will encode the audio file at the given remote URL, encode it to an Amazon Echo compatiable audio file, then
@@ -37,15 +37,11 @@ export namespace Encoder {
      *
      */
     export function encode(params: Params, callback: (err: Error, url: String) => void) {
-            downloadAndEncode(params.sourceUrl, function (err: Error, mp3file: string) {
+            downloadAndEncode(params, function (err: Error, mp3file: string) {
                 if (err != null) {
                     callback(err, null);
                 } else {
-                    aws.config.update( {
-                        accessKeyId: params.accessKeyId,
-                        secretAccessKey: params.accessSecret
-                    });
-                    sendOffToBucket(mp3file, params.targetBucket, params.targetKey, function(err: Error, url: string) {
+                    sendOffToBucket(mp3file, params, function(err: Error, url: string) {
                         fs.unlink(mp3file, (err: NodeJS.ErrnoException) => {
                             if (err) {
                                 console.error("Unable to delete mp3 file " + mp3file + ". Err message: " + err.message);
@@ -61,20 +57,24 @@ export namespace Encoder {
      * Sends the file at the given path off to the specified Amazon S3 bucket.
      * 
      * @param fileUri: The file location of the file to upload.
-     * @param bucket: The Amazon S3 bucket name to upload to.
-     * @param bucketKey: The name of the item to send.
+     * @param params: The parameters for the encoding
      * @param callback: Callback to receive  the URL to the item uploaded or an error if one occurred.
      */
-    export function sendOffToBucket(fileUri: string, bucket: string, itemKey: string, callback: (err: Error, url: string) => void) {
+    export function sendOffToBucket(fileUri: string, params: Params, callback: (err: Error, url: string) => void) {
         fs.readFile(fileUri, {encoding: null}, function(err: NodeJS.ErrnoException, data: string) {
-            let s3: aws.S3 = new aws.S3();
-            let params: aws.s3.PutObjectRequest = {Bucket: bucket, Key: itemKey, Body: data, ACL: "public-read"};
-            s3.putObject(params, function(err: Error, data: any) {
+            // We want to set our credentials as "locally" as possible, so they don't get reused
+            let s3: aws.S3 = new aws.S3({
+                accessKeyId: params.accessKeyId,
+                secretAccessKey: params.accessSecret
+            });
+
+            let putParams: aws.s3.PutObjectRequest = { Bucket: params.targetBucket, Key: params.targetKey, Body: data, ACL: "public-read"};
+            s3.putObject(putParams, function(err: Error, data: any) {
                 if (err) {
                     callback(err, null);
                     return;
                 }
-                let url: string = urlForKey(bucket, itemKey);
+                let url: string = urlForKey(params.targetBucket, params.targetKey);
                 callback(err, url);
             });
         });
@@ -83,15 +83,15 @@ export namespace Encoder {
     /**
      * Method that will download the file at the given URL and save it to a temporary file.
      * 
-     * @param sourceUrl: The URL to download.
+     * @param params: The params for the encoding
      * @param callback: Callback to retrieve the outputPath to the saved temp file or an error if one occurred. 
      */
-    export function downloadAndEncode(sourceUrl: string, callback: (err: Error, outputPath: string) => void) {
-        saveTempFile(sourceUrl, function(error: Error, fileUri: string) {
+    export function downloadAndEncode(params: Params, callback: (err: Error, outputPath: string) => void) {
+        saveTempFile(params.sourceUrl, function(error: Error, fileUri: string) {
             if (error) {
-                callback(Error("Unable to download and save file at path " + sourceUrl + ". Error: " + error.message), null);
+                callback(Error("Unable to download and save file at path " + params.sourceUrl + ". Error: " + error.message), null);
             } else {
-                convertFile(fileUri, function(error: Error, outputPath: string) {
+                convertFile(fileUri, params, function(error: Error, outputPath: string) {
                     fs.unlink(fileUri, (err: NodeJS.ErrnoException) => {
                         if (err) {
                             console.error("Unable to delete file " + fileUri + ". Error message: " + err.message);
@@ -107,15 +107,21 @@ export namespace Encoder {
      * Converts an audio file at the provided path to the Amazon Echo approved MP3 file.
      * 
      * @param inputFile: File path to the audio file.
+     * @param params: The parameters for the encoding
      * @param callback: Callback to retrieve the outputFile path pointing to the encoded file or an error.
      */
-    export function convertFile(inputFile: string, callback: (err: Error, outputFile: string) => void) {
+    export function convertFile(inputFile: string, params: Params, callback: (err: Error, outputFile: string) => void) {
         let normalizedPath: string = path.normalize(inputFile);
 
         // Retrieving a tmp name for the outputPath.
         let options: tmp.SimpleOptions = {
             postfix: ".mp3"
         };
+
+        let filterVolume = 1.0;
+        if (params && params.filterVolume) {
+            filterVolume = params.filterVolume;
+        }
 
         tmp.tmpName(options, function(error: Error, outputPath: string) {
             if (error) {
@@ -124,7 +130,7 @@ export namespace Encoder {
             }
 
             // This is the codec that Amazon suggests regarding the encoding.
-            cprocess.execFile("ffmpeg", ["-i", normalizedPath, "-codec:a", "libmp3lame", "-b:a", "48k", "-ar", "16000", "-af", "volume=3", outputPath],
+            cprocess.execFile("ffmpeg", ["-i", normalizedPath, "-codec:a", "libmp3lame", "-b:a", "48k", "-ar", "16000", "-af", "volume=" + filterVolume, outputPath],
                 function(error: Error, stdout: string, stderr: string) {
                     if (error) {
                         fs.unlink(outputPath, (error: NodeJS.ErrnoException) => {

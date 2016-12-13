@@ -1,13 +1,13 @@
 /// <reference path="../typings/index.d.ts" />
 /// <reference path="../typings/tsd.d.ts" />
-import * as encoder from "../lib/serverEncoder"
+import * as encoder from "../lib/serverEncoder";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as assert from "assert";
-import * as https from "https";
 
-const TEST_FOLDER: string = "testFolder" + path.sep;
+const AWS = require("aws-sdk");
+
 const AUDIO_FILE: string = __dirname + path.sep + "assets" + path.sep + "audio.m4a";
 const IMAGE_FILE: string = __dirname + path.sep + "assets" + path.sep + "img.png";
 const AUDIO_URL: string = "https://d2mxb5cuq6ityb.cloudfront.net/Demo-Geico.m4a";
@@ -29,24 +29,34 @@ const TEST_PUBLIC_BUCKET: string = "bespoken/encoder/test_public";
  * precedence. Currently it will only take the default one. Multiple profile support would need to be added. 
  */
 describe("ServerEncoder", () => {
-    var TEST_KEY: string = "testKey.mp3";
-    var ACCESS_ID: string = "";
-    var SECRET: string = "";
+    let TEST_KEY: string = "testKey.mp3";
+    let ACCESS_ID: string = "";
+    let SECRET: string = "";
 
     before(function() {
-        let configs: Map<string, string> = getVariables();
-        ACCESS_ID = configs.get("aws_access_key_id");
-        SECRET = configs.get("aws_secret_access_key");
-    })
+        ACCESS_ID = AWS.config.credentials.accessKeyId;
+        SECRET = AWS.config.credentials.secretAccessKey;
 
-    describe("encoder", () => {
+        if (process.env.AWS_KEY) {
+            ACCESS_ID = process.env.AWS_KEY;
+        }
+
+        if (process.env.AWS_SECRET) {
+            SECRET = process.env.AWS_SECRET;
+        }
+    });
+
+    describe("encoder", function () {
+        this.timeout(30000);
+
         it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the S3 bucket.", (done: MochaDone) => {
             let params: encoder.Encoder.Params = {
-                sourceUrl: AUDIO_URL, 
-                targetBucket: TEST_BUCKET, 
-                targetKey: TEST_KEY, 
-                accessKeyId: ACCESS_ID, 
-                accessSecret: SECRET }
+                sourceUrl: AUDIO_URL,
+                filterVolume: 1.0,
+                targetBucket: TEST_BUCKET,
+                targetKey: TEST_KEY,
+                accessKeyId: ACCESS_ID,
+                accessSecret: SECRET };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     done(err);
@@ -63,11 +73,12 @@ describe("ServerEncoder", () => {
 
         it("Tests the full \"encoder\" method with valid input to a redirect URL to ensure that the file has been sent to the S3 bucket.", (done: MochaDone) => {
             let params: encoder.Encoder.Params = {
-                sourceUrl: REDIRECT_AUDIO_URL, 
-                targetBucket: TEST_BUCKET, 
-                targetKey: TEST_KEY, 
-                accessKeyId: ACCESS_ID, 
-                accessSecret: SECRET }
+                sourceUrl: REDIRECT_AUDIO_URL,
+                filterVolume: 1.0,
+                targetBucket: TEST_BUCKET,
+                targetKey: TEST_KEY,
+                accessKeyId: ACCESS_ID,
+                accessSecret: SECRET };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     done(err);
@@ -84,9 +95,10 @@ describe("ServerEncoder", () => {
 
         it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the public S3 bucket.", (done: MochaDone) => {
             let params: encoder.Encoder.Params = {
-                sourceUrl: AUDIO_URL, 
-                targetBucket: TEST_PUBLIC_BUCKET, 
-                targetKey: TEST_KEY }
+                sourceUrl: AUDIO_URL,
+                filterVolume: 1.0,
+                targetBucket: TEST_PUBLIC_BUCKET,
+                targetKey: TEST_KEY };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     done(err);
@@ -103,11 +115,12 @@ describe("ServerEncoder", () => {
 
         it("Tests the full \"encoder\" method with an ACC file to ensure that it does not crash and throws an error.", (done: MochaDone) => {
             let params: encoder.Encoder.Params = {
-                sourceUrl: AAC_AUDIO_FILE, 
-                targetBucket: TEST_BUCKET, 
-                targetKey: TEST_KEY, 
-                accessKeyId: ACCESS_ID, 
-                accessSecret: SECRET }
+                sourceUrl: AAC_AUDIO_FILE,
+                filterVolume: 1.0,
+                targetBucket: TEST_BUCKET,
+                targetKey: TEST_KEY,
+                accessKeyId: ACCESS_ID,
+                accessSecret: SECRET };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err != null) {
                     if (url) {
@@ -122,12 +135,13 @@ describe("ServerEncoder", () => {
         });
 
         it("Tests the full \"encoder\" method with a bad URL.  It should return an error with no URL.", (done: MochaDone) => {
-            let params: encoder.Encoder.Params = { 
-                sourceUrl: IMAGE_URL, 
-                targetBucket: TEST_BUCKET, 
-                targetKey: TEST_KEY, 
-                accessKeyId: ACCESS_ID, 
-                accessSecret: SECRET }
+            let params: encoder.Encoder.Params = {
+                sourceUrl: IMAGE_URL,
+                filterVolume: 1.0,
+                targetBucket: TEST_BUCKET,
+                targetKey: TEST_KEY,
+                accessKeyId: ACCESS_ID,
+                accessSecret: SECRET };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err != null) {
                     if (url) {
@@ -142,12 +156,13 @@ describe("ServerEncoder", () => {
         });
 
         it("Tests the full \"encoder\" will throw an error with bad credentials to a private repo.", (done: MochaDone) => {
-            let params: encoder.Encoder.Params = { 
-                sourceUrl: AUDIO_URL, 
-                targetBucket: TEST_BUCKET, 
-                targetKey: TEST_KEY, 
-                accessKeyId: ACCESS_ID, 
-                accessSecret: "12345" }
+            let params: encoder.Encoder.Params = {
+                sourceUrl: AUDIO_URL,
+                filterVolume: 1.0,
+                targetBucket: TEST_BUCKET,
+                targetKey: TEST_KEY,
+                accessKeyId: ACCESS_ID,
+                accessSecret: "12345" };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 console.error(err.message);
                 if (err) {
@@ -165,6 +180,7 @@ describe("ServerEncoder", () => {
         it("Checks that the full \"encoder\" will throw an error when attempting to download a local file instead of a web link.", (done: MochaDone) => {
             let params: encoder.Encoder.Params = {
                 sourceUrl: IMAGE_FILE,
+                filterVolume: 1.0,
                 targetBucket: TEST_BUCKET,
                 targetKey: TEST_KEY,
                 accessKeyId: ACCESS_ID,
@@ -182,31 +198,14 @@ describe("ServerEncoder", () => {
             });
         });
 
-        it("Tests the full \"encoder\" will throw an error with null credentials to a private repo.", (done: MochaDone) => {
-            let params: encoder.Encoder.Params = { 
-                sourceUrl: AUDIO_URL, 
-                targetBucket: TEST_BUCKET, 
-                targetKey: TEST_KEY }
-            encoder.Encoder.encode(params, (err: Error, url: String) => {
-                if (err) {
-                    if (url) {
-                        done(Error("An error was thrown but the URL was still return as " + url));
-                    } else {
-                        done();
-                    }
-                } else {
-                    done(Error("No error was thrown and a url of " + url + " was returned."));
-                }
-            });
-        });
-
         it("Tests the full \"encoder\" with a remote URL to a file that doesn't exist. It should throw an error.", (done: MochaDone) => {
-            let params: encoder.Encoder.Params = { 
-                sourceUrl: NO_FILE_URL, 
-                targetBucket: TEST_BUCKET, 
-                targetKey: TEST_KEY, 
-                accessKeyId: ACCESS_ID, 
-                accessSecret: SECRET }
+            let params: encoder.Encoder.Params = {
+                sourceUrl: NO_FILE_URL,
+                filterVolume: 1.0,
+                targetBucket: TEST_BUCKET,
+                targetKey: TEST_KEY,
+                accessKeyId: ACCESS_ID,
+                accessSecret: SECRET };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     if (url) {
@@ -223,7 +222,20 @@ describe("ServerEncoder", () => {
 
     describe("convertFile", () => {
         it("Converts a valid audio file to a valid MP3 file without error.", (done: MochaDone) => {
-            encoder.Encoder.convertFile(AUDIO_FILE, (err: Error, outputPath: string) => {
+            encoder.Encoder.convertFile(AUDIO_FILE, null, (err: Error, outputPath: string) => {
+                if (err) {
+                    done(err);
+                } else {
+                    done(verifyFile(outputPath, fs.constants.F_OK));
+                }
+                if (outputPath) {
+                    fs.unlinkSync(outputPath);
+                }
+            });
+        });
+
+        it("Converts a valid audio file to a valid MP3 file and changes volume without error.", (done: MochaDone) => {
+            encoder.Encoder.convertFile(AUDIO_FILE, <encoder.Encoder.Params> { filterVolume: 3.0 }, (err: Error, outputPath: string) => {
                 if (err) {
                     done(err);
                 } else {
@@ -236,7 +248,7 @@ describe("ServerEncoder", () => {
         });
 
         it("Attempts to convert an aac file.  It should fail and throw an error with no output path.", (done: MochaDone) => {
-            encoder.Encoder.convertFile(AAC_AUDIO_FILE, (err: Error, outputPath: string) => {
+            encoder.Encoder.convertFile(AAC_AUDIO_FILE, null, (err: Error, outputPath: string) => {
                 if (!err) {
                     done(Error("An error was supposed to be thrown but was not thrown."));
                 } else {
@@ -250,7 +262,7 @@ describe("ServerEncoder", () => {
         });
 
         it("Attempts to convert an image file to a music file. It should fail and throw an error with no output path.", (done: MochaDone) => {
-            encoder.Encoder.convertFile(IMAGE_FILE, (err: Error, outputPath: string) => {
+            encoder.Encoder.convertFile(IMAGE_FILE, null, (err: Error, outputPath: string) => {
                 if (!err) {
                     done(Error("An error was supposed to be thrown but was not thrown."));
                 } else {
@@ -264,9 +276,11 @@ describe("ServerEncoder", () => {
         });
     });
 
-    describe("downloadAndEncode", () => {
+    describe("downloadAndEncode", function () {
+        this.timeout(30000);
+
         it("Checks that an audio file is downloaded and encoded to a readable temporary mp3 without error.", (done: MochaDone) => {
-            encoder.Encoder.downloadAndEncode(AUDIO_URL, (err: Error, outputPath: string) => {
+            encoder.Encoder.downloadAndEncode(<encoder.Encoder.Params> { sourceUrl: AUDIO_URL }, (err: Error, outputPath: string) => {
                 if (err) {
                     done(err);
                 } else {
@@ -279,7 +293,7 @@ describe("ServerEncoder", () => {
         });
 
         it("Checks that an audio file is downloaded from a redirect url and encoded to a readable temporary mp3 without error.", (done: MochaDone) => {
-            encoder.Encoder.downloadAndEncode(REDIRECT_AUDIO_URL, (err: Error, outputPath: string) => {
+            encoder.Encoder.downloadAndEncode(<encoder.Encoder.Params> { sourceUrl: REDIRECT_AUDIO_URL }, (err: Error, outputPath: string) => {
                 if (err) {
                     done(err);
                 } else {
@@ -292,7 +306,7 @@ describe("ServerEncoder", () => {
         });
 
         it("Checks that an error is thrown when attempting to download a file.", (done: MochaDone) => {
-            encoder.Encoder.downloadAndEncode(IMAGE_FILE, (err: Error, outputPath: string) => {
+            encoder.Encoder.downloadAndEncode(<encoder.Encoder.Params> { sourceUrl: IMAGE_FILE }, (err: Error, outputPath: string) => {
                 if (!err) {
                     done();
                 } else {
@@ -303,7 +317,7 @@ describe("ServerEncoder", () => {
         });
 
         it("Checks that a file is not downloaded or encoded if it is not a suitable type. It must produce an error.", (done: MochaDone) => {
-            encoder.Encoder.downloadAndEncode(IMAGE_URL, (err: Error, outputPath: string) => {
+            encoder.Encoder.downloadAndEncode(<encoder.Encoder.Params> { sourceUrl: IMAGE_URL }, (err: Error, outputPath: string) => {
                 if (!err) {
                     done(Error("There was no error produced when there should have been. OutputPath = " + outputPath));
                 } else {
@@ -314,7 +328,7 @@ describe("ServerEncoder", () => {
         });
 
         it("Checks that a file is not downloaded or encoded if the URL does not point to an actual file. It must produce an error.", (done: MochaDone) => {
-            encoder.Encoder.downloadAndEncode(NO_FILE_URL, (err: Error, outputPath: string) => {
+            encoder.Encoder.downloadAndEncode( <encoder.Encoder.Params> { sourceUrl: NO_FILE_URL }, (err: Error, outputPath: string) => {
                 if (!err) {
                     done(Error("There was no error produced when there should have been. OutputPath = " + outputPath));
                 } else {
@@ -325,7 +339,7 @@ describe("ServerEncoder", () => {
         });
 
         it("Checks that a file is not downloaded or encoded if the URL is null. It must produce an error.", (done: MochaDone) => {
-            encoder.Encoder.downloadAndEncode(null, (err: Error, outputPath: string) => {
+            encoder.Encoder.downloadAndEncode( <encoder.Encoder.Params> { sourceUrl: null }, (err: Error, outputPath: string) => {
                 if (!err) {
                     done(Error("There was no error produced when there should have been. OutputPath = " + outputPath));
                 } else {
@@ -339,59 +353,8 @@ describe("ServerEncoder", () => {
     function verifyFile(path: string, mode: number): Error {
         try {
             fs.accessSync(path, mode);
-        } catch(e) {
+        } catch (e) {
             return e;
         }
-    }
-
-    function getVariables(): Map<string, string> {
-        let configs: Map<string, string> = getVariablesFromFile();
-        // Retrieving environment variables to override what's in the config file.
-        if (process.env.AWS_KEY) {
-            configs.set("aws_access_key_id", process.env.AWS_KEY);
-        }
-        if (process.env.AWS_SECRET) {
-            configs.set("aws_secret_access_key", process.env.AWS_SECRET);
-        }
-
-        return configs;
-    } 
-
-    function getVariablesFromFile(): Map<string, string> {
-        try {
-            var homeDirectory: string = os.homedir();
-            var configsString: string = fs.readFileSync(homeDirectory + "/.aws/credentials", "utf8");
-            return parseCreds("default", configsString);
-        } catch(e) {
-            return new Map<string, string>();
-        }
-    }
-
-    /**
-     * Simple method that parses the aws credentials file in to a map.
-     * It only supports the credentials like so:
-     * 
-     * [profile]
-     * "key" = "value"
-     * "key2" = "value2"
-     * 
-     * @params profile The name of the profile to retrieve.
-     * @params creds The entire creds text string.
-     * 
-     * @return A map containing the keys and their values. 
-     */
-    function parseCreds(profile: string, creds: string): Map<string, string> {
-        let map: Map<string, string> = new Map<string, string>();
-        let lines: string[] = creds.split(os.EOL);
-
-        for (var i = 0; i < lines.length; ++i) {
-            if (!lines[i].trim().match(/^\[" + profile + "\]/)) {
-                if (lines[i].trim().match(/^\w+\s*=\s*.+\Z/)) {
-                    let split: string[] = lines[i].split("=");
-                    map.set(split[0].trim(), split[1].trim());
-                }
-            }
-        }
-        return map;
     }
 });

@@ -24,8 +24,8 @@ export namespace Encoder {
         filterVolume: number;
         targetBucket: string;
         targetKey: string;
-        accessKeyId?: string;
-        accessSecret?: string;
+        accessKeyId: string;
+        accessSecret: string;
     }
 
     /**

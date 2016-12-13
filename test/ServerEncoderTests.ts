@@ -97,26 +97,6 @@ describe("ServerEncoder", () => {
             });
         });
 
-        it("Tests the full \"encoder\" method with valid input to ensure that the file has been sent to the public S3 bucket.", (done: MochaDone) => {
-            let params: encoder.Encoder.Params = {
-                sourceUrl: AUDIO_URL,
-                filterVolume: 1.0,
-                targetBucket: TEST_PUBLIC_BUCKET,
-                targetKey: TEST_KEY };
-            encoder.Encoder.encode(params, (err: Error, url: String) => {
-                if (err) {
-                    done(err);
-                } else {
-                    if (url == null) {
-                        done(Error("Url provided was null when no error was thrown."));
-                    } else {
-                        assert.equal(url, "https://s3.amazonaws.com/" + TEST_PUBLIC_BUCKET + "/" + TEST_KEY);
-                        done();
-                    }
-                }
-            });
-        });
-
         it("Tests the full \"encoder\" method with an ACC file to ensure that it does not crash and throws an error.", (done: MochaDone) => {
             let params: encoder.Encoder.Params = {
                 sourceUrl: AAC_AUDIO_FILE,

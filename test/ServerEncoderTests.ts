@@ -34,8 +34,11 @@ describe("ServerEncoder", () => {
     let SECRET: string = "";
 
     before(function() {
-        ACCESS_ID = AWS.config.credentials.accessKeyId;
-        SECRET = AWS.config.credentials.secretAccessKey;
+        // Use the AWS credentials if available from credentials file or environment (via the AWS SDK config)
+        if (AWS.config.credentials !== null) {
+            ACCESS_ID = AWS.config.credentials.accessKeyId;
+            SECRET = AWS.config.credentials.secretAccessKey;
+        }
 
         if (process.env.AWS_KEY) {
             ACCESS_ID = process.env.AWS_KEY;

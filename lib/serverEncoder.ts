@@ -24,8 +24,8 @@ export namespace Encoder {
         filterVolume: number;
         targetBucket: string;
         targetKey: string;
-        accessKeyId?: string;
-        accessSecret?: string;
+        accessKeyId: string;
+        accessSecret: string;
     }
 
     /**
@@ -63,12 +63,10 @@ export namespace Encoder {
     export function sendOffToBucket(fileUri: string, params: Params, callback: (err: Error, url: string) => void) {
         fs.readFile(fileUri, {encoding: null}, function(err: NodeJS.ErrnoException, data: string) {
             // We want to set our credentials as "locally" as possible, so they don't get reused
-            aws.config.update({
+            let s3: aws.S3 = new aws.S3({
                 accessKeyId: params.accessKeyId,
                 secretAccessKey: params.accessSecret
             });
-
-            let s3: aws.S3 = new aws.S3();
             let putParams: aws.s3.PutObjectRequest = { Bucket: params.targetBucket, Key: params.targetKey, Body: data, ACL: "public-read"};
             s3.putObject(putParams, function(err: Error, data: any) {
                 if (err) {
@@ -218,10 +216,6 @@ export namespace Encoder {
             extension = fallback;
         }
         return extension;
-    }
-
-    function stripQueryAndFragments(url: string) {
-        return (url) ? url.substr(0, url.indexOf("?")) : url;
     }
 
     function urlForKey(bucket: string, key: string) {

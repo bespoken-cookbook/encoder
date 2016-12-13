@@ -218,10 +218,6 @@ export namespace Encoder {
         return extension;
     }
 
-    function stripQueryAndFragments(url: string) {
-        return (url) ? url.substr(0, url.indexOf("?")) : url;
-    }
-
     function urlForKey(bucket: string, key: string) {
         return "https://s3.amazonaws.com/" + bucket + "/" + key;
     }

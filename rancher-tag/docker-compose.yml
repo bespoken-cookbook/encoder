@@ -1,0 +1,8 @@
+encoder-tag:
+  image: bespoken/bespoken-encoder
+  stdin_open: true
+  tty: true
+  ports:
+  - ${ENCODER_PORT}:5900/tcp
+  labels:
+    io.rancher.container.pull_image: always

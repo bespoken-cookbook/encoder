@@ -1,0 +1,44 @@
+machine:
+  node:
+    version: 6.9.2
+  services:
+    - docker
+
+dependencies:
+  pre:
+    -wget https://github.com/rancher/rancher-compose/releases/download/v$RANCHER_VERSION_NUM/rancher-compose-linux-amd64-v$RANCHER_VERSION_NUM.tar.gz
+    -tar zxf rancher-compose-linux-amd64-v$RANCHER_VERSION_NUM.tar.gz
+    -rm rancher-compose-linux-amd64-v$RANCHER_VERSION_NUM.tar.gz
+    -sudo mv rancher-compose-v$RANCHER_VERSION_NUM/rancher-compose /usr/local/bin/rancher-compose
+    -sudo chmod +x /usr/local/bin/rancher-compose
+    -rm -r rancher-compose-v$RANCHER_VERSION_NUM
+    -export RANCHER_URL=$RANCHER_URL
+    -export RANCHER_ACCESS_KEY=$RANCHER_ACCESS_KEY
+    -export RANCHER_SECRET_KEY=$RANCHER_SECRET_KEY
+general:
+  branches:
+    only:
+      - master
+
+deployment:
+  codecov:
+    branch: master
+    commands:
+      - npm run codecov
+
+  encoder-production:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker build -f docker/Dockerfile -t bespoken/encoder:$CIRCLE_PROD .
+      - docker push bespoken/bst:$CIRCLE_PROD
+      - rancher-compose -p encoder_$CIRCLE_PROD up -d -u -c -p
+
+  encoder-dev:
+    tag: /release-.*/
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker build -f docker/Dockerfile -t bespoken/encoder:$CIRCLE_TAG .
+      - docker push bespoken/bst:$CIRCLE_TAG
+      - docker push bespoken/bst:$CIRCLE_TAG
+      - rancher-compose -p encoder_$CIRCLE_TAG up -d -u -c -p

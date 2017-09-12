@@ -27,7 +27,7 @@ deployment:
     commands:
       - npm run codecov
 
-  encoder-production:
+  master:
     branch: master
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
@@ -36,7 +36,7 @@ deployment:
       - cd rancher-master/
       - rancher-compose -p encoder_prod up -d -u -c -p
 
-  encoder-dev:
+  release:
     tag: /release-.*/
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS

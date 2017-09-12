@@ -13,10 +13,10 @@ dependencies:
     -sudo mv rancher-compose-v$RANCHER_VERSION_NUM/rancher-compose /usr/local/bin/rancher-compose
     -sudo chmod +x /usr/local/bin/rancher-compose
     -rm -r rancher-compose-v$RANCHER_VERSION_NUM
-    -export RANCHER_URL=$RANCHER_URL
-    -export RANCHER_ACCESS_KEY=$RANCHER_ACCESS_KEY
-    -export RANCHER_SECRET_KEY=$RANCHER_SECRET_KEY
-    -export ENCODER_PORT=$ENCODER_PORT
+    #-export RANCHER_URL=$RANCHER_URL
+    #-export RANCHER_ACCESS_KEY=$RANCHER_ACCESS_KEY
+    #-export RANCHER_SECRET_KEY=$RANCHER_SECRET_KEY
+    #-export ENCODER_PORT=$ENCODER_PORT
 general:
   branches:
     only:

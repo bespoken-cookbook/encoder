@@ -3,6 +3,6 @@ encoder-master:
   stdin_open: true
   tty: true
   ports:
-  - ${ENCODER_PORT}:5900/tcp
+  - 5900:5900/tcp
   labels:
     io.rancher.container.pull_image: always

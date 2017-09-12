@@ -3,6 +3,6 @@ encoder-tag:
   stdin_open: true
   tty: true
   ports:
-  - ${ENCODER_PORT}:5900/tcp
+  - 59${CIRCLE_BUILD_NUM}:5900/tcp
   labels:
     io.rancher.container.pull_image: always

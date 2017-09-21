@@ -19,8 +19,7 @@ const IMAGE_URL: string = "https://xapp-wpengine.netdna-ssl.com/wp-content/theme
 const AAC_AUDIO_FILE: string = "https://s3.amazonaws.com/bespoken/encoded/ContentPromoPromptBad.m4a";
 const NO_FILE_URL: string = "http://noooo.file.exists/Demo-Geico.m4a";
 
-const TEST_BUCKET: string = "bespoken/encoder/test";
-const TEST_PUBLIC_BUCKET: string = "bespoken/encoder/test_public";
+const TEST_BUCKET: string = "bespoken-encoder-test/public";
 
 /**
  * Unit and integration tests for the ServerEncoder scope.  This requires aws keys in order to
@@ -224,20 +223,6 @@ describe("ServerEncoder", () => {
                     done(err);
                 } else {
                     done(verifyFile(outputPath, fs.constants.F_OK));
-                }
-                if (outputPath) {
-                    fs.unlinkSync(outputPath);
-                }
-            });
-        });
-
-        it("Attempts to convert an aac file.  It should fail and throw an error with no output path.", (done: MochaDone) => {
-            encoder.Encoder.convertFile(AAC_AUDIO_FILE, null, (err: Error, outputPath: string) => {
-                if (!err) {
-                    done(Error("An error was supposed to be thrown but was not thrown."));
-                } else {
-                    assert.equal(outputPath, null, "An output path of " + outputPath + " was produced when it should have been null.");
-                    done();
                 }
                 if (outputPath) {
                     fs.unlinkSync(outputPath);

@@ -12,6 +12,7 @@ dependencies:
     - sudo mv rancher-compose-v$RANCHER_VERSION_NUM/rancher-compose /usr/local/bin/rancher-compose
     - sudo chmod +x /usr/local/bin/rancher-compose
     - rm -r rancher-compose-v$RANCHER_VERSION_NUM
+    - sudo apt-get install ffmpeg
     #-export RANCHER_URL=$RANCHER_URL
     #-export RANCHER_ACCESS_KEY=$RANCHER_ACCESS_KEY
     #-export RANCHER_SECRET_KEY=$RANCHER_SECRET_KEY
@@ -33,8 +34,7 @@ deployment:
       #- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       #- docker build -f docker/Dockerfile -t bespoken/encoder:$CIRCLE_PROD .
       #- docker push bespoken/bst:$CIRCLE_PROD
-      - cd rancher-master/
-      - rancher-compose -p encoder_prod up -d -u -c -p
+      - rancher-compose -p encoder_prod --f rancher-master/docker-compose.yml -r rancher-master/rancher-compose.yml up -d -u -c -p
 
   release:
     tag: /release-.*/
@@ -43,5 +43,4 @@ deployment:
       #- docker build -f docker/Dockerfile -t bespoken/encoder:$CIRCLE_BUILD_NUM .
       #- docker push bespoken/bst:$CIRCLE_BUILD_NUM
       #- docker push bespoken/bst:$CIRCLE_BUILD_NUM
-      - cd rancher-tag/
-      - rancher-compose -p encoder_$CIRCLE_BUILD_NUM up -d -u -c -p
+      - rancher-compose -p encoder_$CIRCLE_BUILD_NUM --f rancher-tag/docker-compose.yml -r rancher-tag/rancher-compose.yml up -d -u -c

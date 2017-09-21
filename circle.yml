@@ -12,6 +12,8 @@ dependencies:
     - sudo mv rancher-compose-v$RANCHER_VERSION_NUM/rancher-compose /usr/local/bin/rancher-compose
     - sudo chmod +x /usr/local/bin/rancher-compose
     - rm -r rancher-compose-v$RANCHER_VERSION_NUM
+    - sudo add-apt-repository --yes ppa:kirillshkrogalev/ffmpeg-next
+    - sudo apt-get update
     - sudo apt-get install ffmpeg
     #-export RANCHER_URL=$RANCHER_URL
     #-export RANCHER_ACCESS_KEY=$RANCHER_ACCESS_KEY

@@ -1,8 +1,12 @@
 encoder-tag:
-  image: bespoken/bespoken-encoder
+  image: bespoken/bespoken-encoder:${CIRCLE_BUILD_NUM}
   stdin_open: true
   tty: true
   ports:
   - 59${CIRCLE_BUILD_NUM}:5900/tcp
+  environment:
+    AWS_KEY: ${AWS_KEY}
+    AWS_SECRET: ${AWS_SECRET}
+
   labels:
     io.rancher.container.pull_image: always

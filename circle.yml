@@ -15,27 +15,24 @@ dependencies:
     - sudo add-apt-repository --yes ppa:kirillshkrogalev/ffmpeg-next
     - sudo apt-get update
     - sudo apt-get install ffmpeg
-    #-export RANCHER_URL=$RANCHER_URL
-    #-export RANCHER_ACCESS_KEY=$RANCHER_ACCESS_KEY
-    #-export RANCHER_SECRET_KEY=$RANCHER_SECRET_KEY
-    #-export ENCODER_PORT=$ENCODER_PORT
+
 general:
   branches:
     only:
       - master
 
 deployment:
-  #codecov:
-  #  branch: master
-  #  commands:
-  #    - npm run codecov
+  codecov:
+    branch: master
+    commands:
+      - npm run codecov
 
   master:
     branch: master
     commands:
       #- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      #- docker build -f docker/Dockerfile -t bespoken/encoder:$CIRCLE_PROD .
-      #- docker push bespoken/bst:$CIRCLE_PROD
+      #- docker build -f docker/Dockerfile -t bespoken/encoder .
+      #- docker push bespoken/encoder
       - rancher-compose -p encoder_prod --f rancher-master/docker-compose.yml -r rancher-master/rancher-compose.yml up -d -u -c -p
 
   release:
@@ -43,6 +40,6 @@ deployment:
     commands:
       #- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       #- docker build -f docker/Dockerfile -t bespoken/encoder:$CIRCLE_BUILD_NUM .
-      #- docker push bespoken/bst:$CIRCLE_BUILD_NUM
-      #- docker push bespoken/bst:$CIRCLE_BUILD_NUM
+      #- docker push bespoken/encoder:$CIRCLE_BUILD_NUM
+      #- docker push bespoken/encoder:$CIRCLE_BUILD_NUM
       - rancher-compose -p encoder_$CIRCLE_BUILD_NUM --f rancher-tag/docker-compose.yml -r rancher-tag/rancher-compose.yml up -d -u -c

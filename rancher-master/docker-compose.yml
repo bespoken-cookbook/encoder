@@ -4,5 +4,8 @@ encoder-master:
   tty: true
   ports:
   - 5900:5900/tcp
+  environment:
+    AWS_KEY: ${AWS_KEY}
+    AWS_SECRET: ${AWS_SECRET}
   labels:
     io.rancher.container.pull_image: always

@@ -22,10 +22,10 @@ general:
       - master
 
 deployment:
-  codecov:
-    branch: master
-    commands:
-      - npm run codecov
+  #codecov:
+    #branch: master
+    #commands:
+    #  - npm run codecov
 
   master:
     branch: master

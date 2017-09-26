@@ -1,9 +1,9 @@
 encoder-master:
-  image: bespoken/bespoken-encoder
+  image: bespoken/bespoken-encoder:${CIRCLE_BUILD_NUM}
   stdin_open: true
   tty: true
   ports:
-  - 5900:5900/tcp
+  - 80:5900/tcp
   environment:
     AWS_KEY: ${AWS_KEY}
     AWS_SECRET: ${AWS_SECRET}

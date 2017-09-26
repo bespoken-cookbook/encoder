@@ -25,17 +25,17 @@ deployment:
   master:
     branch: master
     commands:
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker build -f docker/Dockerfile -t bespoken/encoder:$CIRCLE_BUILD_NUM .
-      - docker push bespoken/encoder:$CIRCLE_BUILD_NUM
+      #- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker build -f dockerbuild/Dockerfile -t bancher-bespoken/encoder .
+      #- docker push bespoken/encoder:$CIRCLE_BUILD_NUM
       #docker-compose.yml call the $CIRCLE_BUILD_NUM
       - rancher-compose -p encoder_prod --f rancher-master/docker-compose.yml -r rancher-master/rancher-compose.yml up -d -u -c -p
 
   release:
     tag: /release-.*/
     commands:
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker build -f docker/Dockerfile -t bespoken/encoder:$CIRCLE_TAG .
-      - docker push bespoken/encoder:$CIRCLE_TAG
+      #- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker build -f dockerbuild/Dockerfile -t bancher-bespoken/encoder:$CIRCLE_TAG .
+      #- docker push bespoken/encoder:$CIRCLE_TAG
       #docker-compose.yml call the tag
       - rancher-compose -p encoder_$CIRCLE_TAG --f rancher-tag/docker-compose.yml -r rancher-tag/rancher-compose.yml up -d -u -c

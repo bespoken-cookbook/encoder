@@ -1,9 +1,9 @@
 encoder-tag:
-  image: bespoken/bespoken-encoder:${CIRCLE_TAG}
+  image: bancher-bespoken/bespoken-encoder:${CIRCLE_TAG}
   stdin_open: true
   tty: true
   ports:
-  - 80${CIRCLE_BUILD_NUM}:5900/tcp
+  - 80${CIRCLE_BUILD_NUM}:9200/tcp
   environment:
     AWS_KEY: ${AWS_KEY}
     AWS_SECRET: ${AWS_SECRET}

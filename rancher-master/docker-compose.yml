@@ -1,9 +1,10 @@
 encoder-master:
-  image: bespoken/bespoken-encoder:${CIRCLE_BUILD_NUM}
+  #image: bancher-bespoken/bespoken-encoder
   stdin_open: true
   tty: true
+  build: .
   ports:
-  - 80:5900/tcp
+  - 80:9200/tcp
   environment:
     AWS_KEY: ${AWS_KEY}
     AWS_SECRET: ${AWS_SECRET}

@@ -1,0 +1,8 @@
+encoder:
+  stdin_open: true
+  tty: true
+  build: https://raw.githubusercontent.com/bespoken/encoder/master/dockerbuild/Dockerfile
+  ports:
+  - 80:9200/tcp
+  labels:
+    io.rancher.container.pull_image: always

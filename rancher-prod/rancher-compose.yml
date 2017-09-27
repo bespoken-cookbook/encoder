@@ -1,4 +1,4 @@
 services:
-  encoder-tag:
+  encoder:
     scale: 1
     start_on_create: true

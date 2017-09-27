@@ -17,17 +17,14 @@ dependencies:
     - sudo apt-get install ffmpeg
 
 general:
-  branches:
-    only:
-      - master
 
 deployment:
-  master:
-    branch: master
-    commands:
-      - rancher-compose -p encoder_prod --f rancher-master/docker-compose.yml -r rancher-master/rancher-compose.yml up -d -u -c -p
-
-  release:
+  BstEncoder:
     tag: /BstEncoder-.*/
     commands:
-      - rancher-compose -p encoder_$CIRCLE_TAG --f rancher-tag/docker-compose.yml -r rancher-tag/rancher-compose.yml up -d -u -c
+      - rancher-compose -p encoder --f rancher-prod/docker-compose.yml -r rancher-prod/rancher-compose.yml up -d -u -c -p
+
+  DevEncoder:
+    tag: /DevEncoder-.*/
+    commands:
+      - rancher-compose -p encoder-$CIRCLE_TAG --f rancher-dev/docker-compose.yml -r rancher-dev/rancher-compose.yml up -d -u -c -p

@@ -15,7 +15,6 @@ dependencies:
     - sudo add-apt-repository --yes ppa:kirillshkrogalev/ffmpeg-next
     - sudo apt-get update
     - sudo apt-get install ffmpeg
-    
 
 general:
   branches:
@@ -29,6 +28,6 @@ deployment:
       - rancher-compose -p encoder_prod --f rancher-master/docker-compose.yml -r rancher-master/rancher-compose.yml up -d -u -c -p
 
   release:
-    tag: /release-.*/
+    tag: /BstEncoder-.*/
     commands:
       - rancher-compose -p encoder_$CIRCLE_TAG --f rancher-tag/docker-compose.yml -r rancher-tag/rancher-compose.yml up -d -u -c

@@ -2,7 +2,7 @@ encoder-master:
   #image: bancher-bespoken/bespoken-encoder
   stdin_open: true
   tty: true
-  build: .
+  build: https://raw.githubusercontent.com/yobelito/encoder/master/rancher-master/Dockerfile
   ports:
   - 80:9200/tcp
   #environment:

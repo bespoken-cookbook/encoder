@@ -5,8 +5,8 @@ encoder-master:
   build: .
   ports:
   - 80:9200/tcp
-  environment:
-    AWS_KEY: ${AWS_KEY}
-    AWS_SECRET: ${AWS_SECRET}
+  #environment:
+  #  AWS_KEY: ${AWS_KEY}
+  #  AWS_SECRET: ${AWS_SECRET}
   labels:
     io.rancher.container.pull_image: always

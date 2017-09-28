@@ -22,9 +22,9 @@ deployment:
   BstEncoder:
     tag: /BstEncoder-.*/
     commands:
-      - rancher-compose -p encoder --f rancher-prod/docker-compose.yml -r rancher-prod/rancher-compose.yml up -d -u -c -p
+      - rancher-compose -p BstEncoder --f rancher-prod/docker-compose.yml -r rancher-prod/rancher-compose.yml up -d -u -c -p
 
   DevEncoder:
     tag: /DevEncoder-.*/
     commands:
-      - rancher-compose -p encoder-$CIRCLE_TAG --f rancher-dev/docker-compose.yml -r rancher-dev/rancher-compose.yml up -d -u -c -p
+      - rancher-compose -p DevEncoder --f rancher-dev/docker-compose.yml -r rancher-dev/rancher-compose.yml up -d -u -c -p

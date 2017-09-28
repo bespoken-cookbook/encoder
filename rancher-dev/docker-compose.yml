@@ -3,6 +3,6 @@ encoder-dev:
   tty: true
   build: https://raw.githubusercontent.com/bespoken/encoder/master/dockerbuild/Dockerfile
   ports:
-  - 80${CIRCLE_BUILD_NUM}:9200/tcp
+  - 9200:9200/tcp
   labels:
     io.rancher.container.pull_image: always

@@ -22,7 +22,7 @@ POST /encode
 sourceURL: The source audio to be encoded  
 targetBucket: The S3 bucket to write to  
 targetKey: The S3 key to stored this files as in the bucket  
-accessKeyID: Optional] The AWS Access Key that has privileges to write to this bucket  
+accessKeyID: [Optional] The AWS Access Key that has privileges to write to this bucket  
 accessSecretKey: [Optional] The AWS Secret Key that has privileges to write to this bucket  
 
 The `accessKeyID` and `accessSecretKey` are options if the bucket being uplaoded is public. 

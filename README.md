@@ -40,6 +40,18 @@ Body:	URL to encoded audio (as plain text)
 Response Code: 4xx
 Body: Error message
 
+### Example Curl
+```
+curl -X POST \  
+  https://encoder.bespoken.io/encode \  
+  -H 'accesskeyid: AWS_ACCESS_KEY_ID' \  
+  -H 'accesssecretkey: AWS_SECRET_ACCESS_KEY' \  
+  -H 'cache-control: no-cache' \  
+  -H 'sourceurl: https://s3.amazonaws.com/xapp-alexa/UnitTestOutput.mp3' \  
+  -H 'targetbucket: bespoken-encoding-test' \  
+  -H 'targetkey: UnitTestOutput-encoded.mp3'
+```
+
 # Building
 
 The project is written in TypeScript and node. With NPM installed, building the project is simply:

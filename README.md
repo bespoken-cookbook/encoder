@@ -16,8 +16,9 @@ https://www.ffmpeg.org/
 ## Endpoint
 
 POST /encode
+BASE_URL https://encoder.bespoken.io
 
-### Parameters
+### Headers - information to be sent to the encoder
 
 sourceURL: The source audio to be encoded  
 targetBucket: The S3 bucket to write to  

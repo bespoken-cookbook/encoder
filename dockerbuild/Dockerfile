@@ -4,7 +4,7 @@ WORKDIR /opt/bespoken/encoder
 
 RUN ls -l
 
-RUN git pull
+RUN git checkout ${CIRCLE_TAG}
 
 RUN npm install
 

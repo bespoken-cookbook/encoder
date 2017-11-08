@@ -1,0 +1,30 @@
+machine:
+  node:
+    version: 6.9.2
+  services:
+    - docker
+
+dependencies:
+  pre:
+    - wget https://github.com/rancher/rancher-compose/releases/download/v$RANCHER_VERSION_NUM/rancher-compose-linux-amd64-v$RANCHER_VERSION_NUM.tar.gz
+    - tar zxf rancher-compose-linux-amd64-v$RANCHER_VERSION_NUM.tar.gz
+    - rm rancher-compose-linux-amd64-v$RANCHER_VERSION_NUM.tar.gz
+    - sudo mv rancher-compose-v$RANCHER_VERSION_NUM/rancher-compose /usr/local/bin/rancher-compose
+    - sudo chmod +x /usr/local/bin/rancher-compose
+    - rm -r rancher-compose-v$RANCHER_VERSION_NUM
+    - sudo add-apt-repository --yes ppa:kirillshkrogalev/ffmpeg-next
+    - sudo apt-get update
+    - sudo apt-get install ffmpeg
+
+general:
+
+deployment:
+  BstEncoder:
+    tag: /BstEncoder-.*/
+    commands:
+      - rancher-compose -p BstEncoder --f rancher-prod/docker-compose.yml -r rancher-prod/rancher-compose.yml up -d -u -c -p
+
+  DevEncoder:
+    tag: /DevEncoder-.*/
+    commands:
+      - rancher-compose -p DevEncoder --f rancher-dev/docker-compose.yml -r rancher-dev/rancher-compose.yml up -d -u -c -p

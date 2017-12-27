@@ -1,5 +1,6 @@
 /// <reference path="../typings/index.d.ts" />
 import * as http from "http";
+import * as https from "https";
 import { Encoder } from "./serverEncoder";
 import * as process from "process";
 
@@ -14,7 +15,7 @@ process.on("uncaughtException", function(error: Error) {
     console.error("UncaughtException: " + error.toString());
 });
 
-let server = http.createServer(function (request: http.IncomingMessage, response: http.ServerResponse) {
+const app = function (request: http.IncomingMessage, response: http.ServerResponse) {
     let method = request.method;
     let url = request.url;
     let headers = request.headers;
@@ -88,9 +89,28 @@ let server = http.createServer(function (request: http.IncomingMessage, response
         console.info("ending");
         response.end();
     }
-});
+}
 
-server.listen(9200);
+// Get the port - set to 9020 by default
+const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 9200;
+
+let server;
+// Handle server creation differently if this is SSL or not
+if (port === 443) {
+    const credentials = {
+        key: process.env.SSL_KEY.replace(/\\n/g, "\n"),
+        cert: process.env.SSL_CERT.replace(/\\n/g, "\n"),
+    };
+    server = https.createServer(credentials as any, app as any);
+    server.setTimeout(0);
+} else {
+    server = http.createServer(app as any);
+    server.timeout = 0;
+}
+
+server.listen(port, () => {
+    console.log("Encoder Server running on port :" + port);
+});
 
 function checkHeaders(headers: any, response: http.ServerResponse) {
     checkParameter(headers[PARAM_SOURCE_URL], response, "The header must include a \"sourceurl\" to the sound file.");

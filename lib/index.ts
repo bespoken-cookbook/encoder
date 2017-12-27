@@ -91,7 +91,7 @@ const app = function (request: http.IncomingMessage, response: http.ServerRespon
     }
 }
 
-// Get the port - set to 9020 by default
+// Get the port - set to 9200 by default
 const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 9200;
 
 let server;

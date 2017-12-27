@@ -18,7 +18,7 @@ dependencies:
 
 deployment:
   encoder:
-    tag: /encoder-prod-*/
+    tag: /encoder-prod-.*/
     commands:
       # Logs in into docker, builds and pushes the firebase-fixer image
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS

@@ -1,4 +1,4 @@
-FROM bespoken/bespoken-encoder:latest
+FROM bespoken/encoder:latest
 
 WORKDIR /opt/bespoken/encoder
 
@@ -16,6 +16,6 @@ RUN npm install
 
 RUN npm run build
 
-EXPOSE 9200
+EXPOSE 9200 443
 
 CMD npm start

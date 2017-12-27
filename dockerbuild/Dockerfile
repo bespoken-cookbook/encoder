@@ -1,4 +1,4 @@
-FROM bespoken/bespoken-encoder:latest
+FROM bespoken/encoder:latest
 
 WORKDIR /opt/bespoken/encoder
 

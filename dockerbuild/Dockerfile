@@ -4,7 +4,13 @@ WORKDIR /opt/bespoken/encoder
 
 RUN ls -l
 
-RUN git pull
+COPY lib/ ./lib/
+
+COPY test/ ./test/
+
+COPY typings/ ./typings/
+
+COPY *.json ./
 
 RUN npm install
 

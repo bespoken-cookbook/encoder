@@ -91,26 +91,33 @@ const app = function (request: http.IncomingMessage, response: http.ServerRespon
     }
 }
 
-// Get the port - set to 9200 by default
-const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 9200;
+// Get the HTTP and HTTPS port - set to 9200 by default
+const httpsPort = process.env.HTTPS_PORT ? parseInt(process.env.HTTPS_PORT, 10) : undefined;
+const httpPort = process.env.HTTP_PORT ? parseInt(process.env.HTTP_PORT, 10) : 9200;
 
-let server;
-// Handle server creation differently if this is SSL or not
-if (port === 443) {
+// Handle server creation for SSL
+if (httpsPort) {
     const credentials = {
         key: process.env.SSL_KEY.replace(/\\n/g, "\n"),
         cert: process.env.SSL_CERT.replace(/\\n/g, "\n"),
     };
-    server = https.createServer(credentials as any, app as any);
+    const server = https.createServer(credentials as any, app as any);
     server.setTimeout(0);
-} else {
-    server = http.createServer(app as any);
-    server.timeout = 0;
+    server.listen(httpsPort, () => {
+        console.log("Encoder Server running on port :" + httpsPort);
+    });
 }
 
-server.listen(port, () => {
-    console.log("Encoder Server running on port :" + port);
-});
+// Handles server creation for plain HTTP
+if (httpPort) {
+    const server = http.createServer(app as any);
+    server.timeout = 0;
+    server.listen(httpPort, () => {
+        console.log("Encoder Server running on port :" + httpPort);
+    });
+}
+
+
 
 function checkHeaders(headers: any, response: http.ServerResponse) {
     checkParameter(headers[PARAM_SOURCE_URL], response, "The header must include a \"sourceurl\" to the sound file.");

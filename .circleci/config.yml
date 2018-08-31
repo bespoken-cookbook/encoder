@@ -42,9 +42,6 @@ jobs:
       - attach_workspace:
           at: ~/circleci-deployment
       - checkout
-      - run: sudo echo deb http://ftp.uk.debian.org/debian jessie-backports main \
-                               >>/etc/apt/sources.list
-      - run: sudo apt-get update
       - run: sudo apt-get install ffmpeg
       - run: npm install
       - run: npm run build

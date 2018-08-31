@@ -1,0 +1,76 @@
+hyper-deploy-steps: &hyper-deploy-steps
+  - attach_workspace:
+      at: ~/circleci-deployment
+  - run:
+      name: Install hyper
+      command: |
+        wget https://hyper-install.s3.amazonaws.com/hyper-linux-x86_64.tar.gz
+        tar xzf hyper-linux-x86_64.tar.gz
+        chmod +x hyper
+        ./hyper --help
+  - run:
+      name: Build Docker
+      command: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASS
+        docker build -f dockerbuild/Dockerfile -t bespoken/encoder:$CIRCLE_TAG .
+        docker push bespoken/encoder:$CIRCLE_TAG
+  - run:
+      name: Login to Hyper
+      command: |
+        ./hyper config --accesskey $HYPER_KEY --secretkey $HYPER_SECRET --default-region us-west-1
+        ./hyper login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+        ./hyper pull bespoken/encoder:$CIRCLE_TAG
+  - run:
+      name: Deploy container
+      command: |
+        ./hyper rm -f encoder || true
+        >
+          ./hyper run -d
+          -e SSL_CERT="$SSL_CERT"
+          -e SSL_KEY="$SSL_KEY"
+          -e SERVER_PORT=443
+          --name encoder --size s4 --restart=always -P bespoken/encoder:$CIRCLE_TAG
+        ./hyper fip attach 199.245.56.172 encoder
+
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/node:6
+    working_directory: ~/circleci-deployment
+    steps:
+      - attach_workspace:
+          at: ~/circleci-deployment
+      - checkout
+      - run: sudo add-apt-repository --yes ppa:kirillshkrogalev/ffmpeg-next
+      - run: sudo apt-get update
+      - run: sudo apt-get install ffmpeg
+      - run: npm install
+      - run: npm run build
+      - run: npm run test
+      - persist_to_workspace:
+          root: .
+          paths: .
+
+  encoder-prod:
+    machine: true
+    working_directory: ~/circleci-deployment
+    steps: *hyper-deploy-steps
+
+
+workflows:
+  version: 2
+  test-n-deploy:
+    jobs:
+      - test:
+          filters:
+            tags:
+              only: /.*/
+      - encoder-prod:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /encoder-prod-.*/
+            branches:
+              ignore: /.*/

@@ -42,6 +42,7 @@ jobs:
       - attach_workspace:
           at: ~/circleci-deployment
       - checkout
+      - run: sudo apt-get update
       - run: sudo apt-get install yasm nasm \
                              build-essential automake autoconf \
                              libtool pkg-config libcurl4-openssl-dev \

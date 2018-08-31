@@ -42,9 +42,19 @@ jobs:
       - attach_workspace:
           at: ~/circleci-deployment
       - checkout
-      - run: sh -c 'echo "deb [arch=amd64] http://ftp.uk.debian.org/debian jessie-backports main" >> /etc/apt/sources.list.d/ffmpeg.list'
-      - run: sudo apt-get update
-      - run: sudo apt-get install ffmpeg
+      - run: sudo apt-get install yasm nasm \
+                             build-essential automake autoconf \
+                             libtool pkg-config libcurl4-openssl-dev \
+                             intltool libxml2-dev libgtk2.0-dev \
+                             libnotify-dev libglib2.0-dev libevent-dev \
+                             checkinstall
+      - run: git clone git://git.videolan.org/ffmpeg.git
+      - run: cd ffmpeg
+      - run: ./configure --prefix=/usr
+      - run: time make -j 8
+      - run: cat RELEASE
+      - run: sudo checkinstall
+      - run: sudo dpkg --install ffmpeg_*.deb
       - run: npm install
       - run: npm run build
       - run: npm run test

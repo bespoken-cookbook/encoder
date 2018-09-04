@@ -24,27 +24,21 @@ hyper-deploy-steps: &hyper-deploy-steps
       name: Deploy container
       command: |
         ./hyper rm -f encoder || true
-        >
-          ./hyper run -d
-          -e SSL_CERT="$SSL_CERT"
-          -e SSL_KEY="$SSL_KEY"
-          -e SERVER_PORT=443
-          --name encoder --size s4 --restart=always -P bespoken/encoder:$CIRCLE_TAG
+        ./hyper run -d -e SSL_CERT="$SSL_CERT" -e SSL_KEY="$SSL_KEY" -e SERVER_PORT=443 --name encoder --size s4 --restart=always -P bespoken/encoder:$CIRCLE_TAG
         ./hyper fip attach 199.245.56.172 encoder
 
 version: 2
 jobs:
   test:
     docker:
+      # This is a custom image in ubuntu that includes node 6 and ffmpeg in order to run the test , Dockerbuild is
+      # in dockerbuild/testContainer/Dockerfile
       - image: jperata/encodertest:1
     working_directory: ~/circleci-deployment
     steps:
       - attach_workspace:
           at: ~/circleci-deployment
       - checkout
-      - run: add-apt-repository --yes ppa:kirillshkrogalev/ffmpeg-next
-      - run: apt-get update
-      - run: apt-get install ffmpeg
       - run: npm install
       - run: npm run build
       - run: npm run test

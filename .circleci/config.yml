@@ -36,7 +36,7 @@ version: 2
 jobs:
   test:
     docker:
-      - image: node:6
+      - image: jperata/encodertest:1
     working_directory: ~/circleci-deployment
     steps:
       - attach_workspace:

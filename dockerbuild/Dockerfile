@@ -16,6 +16,6 @@ RUN npm install
 
 RUN npm run build
 
-EXPOSE 9200 443
+EXPOSE 3000 443
 
 CMD npm start

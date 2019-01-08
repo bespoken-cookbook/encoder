@@ -1,31 +1,42 @@
 hyper-deploy-steps: &hyper-deploy-steps
   - attach_workspace:
       at: ~/circleci-deployment
-  - run:
-      name: Install hyper
-      command: |
-        wget https://hyper-install.s3.amazonaws.com/hyper-linux-x86_64.tar.gz
-        tar xzf hyper-linux-x86_64.tar.gz
-        chmod +x hyper
-        ./hyper --help
+#  - run:
+#      name: Install hyper
+#      command: |
+#        wget https://hyper-install.s3.amazonaws.com/hyper-linux-x86_64.tar.gz
+#        tar xzf hyper-linux-x86_64.tar.gz
+#        chmod +x hyper
+#        ./hyper --help
   - run:
       name: Build Docker
       command: |
         docker login -u $DOCKER_USER -p $DOCKER_PASS
         docker build -f dockerbuild/Dockerfile -t bespoken/encoder:$CIRCLE_TAG .
         docker push bespoken/encoder:$CIRCLE_TAG
-  - run:
-      name: Login to Hyper
-      command: |
-        ./hyper config --accesskey $HYPER_KEY --secretkey $HYPER_SECRET --default-region us-west-1
-        ./hyper login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-        ./hyper pull bespoken/encoder:$CIRCLE_TAG
+#  - run:
+#      name: Login to Hyper
+#      command: |
+#        ./hyper config --accesskey $HYPER_KEY --secretkey $HYPER_SECRET --default-region us-west-1
+#        ./hyper login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+#        ./hyper pull bespoken/encoder:$CIRCLE_TAG
   - run:
       name: Deploy container
       command: |
-        ./hyper rm -f encoder || true
-        ./hyper run -d -e SSL_CERT="$SSL_CERT" -e SSL_KEY="$SSL_KEY" -e SERVER_PORT=443 --name encoder --size s4 --restart=always -P bespoken/encoder:$CIRCLE_TAG
-        ./hyper fip attach 199.245.56.172 encoder
+        sudo npm install fargate-helper -g
+        fargate service \
+        --command "node outputs/source/lib/index.js" \
+        --containerPort 3000 \
+        --cpu 1024 \
+        --env AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+        --env AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+        --env AWS_DEFAULT_REGION=$AWS_REGION \
+        --image bespoken/encoder:$CIRCLE_TAG \
+        --memory 2048 \
+        --name encoder
+#        ./hyper rm -f encoder || true
+#        ./hyper run -d -e SSL_CERT="$SSL_CERT" -e SSL_KEY="$SSL_KEY" -e SERVER_PORT=443 --name encoder --size s4 --restart=always -P bespoken/encoder:$CIRCLE_TAG
+#        ./hyper fip attach 199.245.56.172 encoder
 
 version: 2
 jobs:

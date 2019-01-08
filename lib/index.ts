@@ -91,8 +91,8 @@ const app = function (request: http.IncomingMessage, response: http.ServerRespon
     }
 }
 
-// Get the port - set to 9200 by default
-const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 9200;
+// Get the port - set to 3000 by default
+const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 3000;
 
 let server;
 // Handle server creation differently if this is SSL or not

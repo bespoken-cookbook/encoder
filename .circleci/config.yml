@@ -23,7 +23,7 @@ hyper-deploy-steps: &hyper-deploy-steps
   - run:
       name: Deploy container
       command: |
-        sudo npm install fargate-helper -g
+        npm install fargate-helper -g
         fargate service \
         --command "node outputs/source/lib/index.js" \
         --containerPort 3000 \

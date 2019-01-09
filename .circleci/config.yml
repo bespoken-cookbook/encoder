@@ -59,7 +59,8 @@ jobs:
           paths: .
 
   encoder-prod:
-    machine: true
+    docker:
+          - image: circleci/node
     working_directory: ~/circleci-deployment
     steps: *hyper-deploy-steps
 

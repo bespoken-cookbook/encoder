@@ -59,7 +59,8 @@ describe("ServerEncoder", () => {
                 targetBucket: TEST_BUCKET,
                 targetKey: TEST_KEY,
                 accessKeyId: ACCESS_ID,
-                accessSecret: SECRET };
+                accessSecret: SECRET,
+                awsRegion: "us-east-1"};
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     done(err);
@@ -81,7 +82,8 @@ describe("ServerEncoder", () => {
                 targetBucket: TEST_BUCKET,
                 targetKey: TEST_KEY,
                 accessKeyId: ACCESS_ID,
-                accessSecret: SECRET };
+                accessSecret: SECRET,
+                awsRegion: "us-east-1" };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     done(err);
@@ -103,7 +105,8 @@ describe("ServerEncoder", () => {
                 targetBucket: TEST_BUCKET,
                 targetKey: TEST_KEY,
                 accessKeyId: ACCESS_ID,
-                accessSecret: SECRET };
+                accessSecret: SECRET,
+                awsRegion: "us-east-1" };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err != null) {
                     if (url) {
@@ -124,7 +127,8 @@ describe("ServerEncoder", () => {
                 targetBucket: TEST_BUCKET,
                 targetKey: TEST_KEY,
                 accessKeyId: ACCESS_ID,
-                accessSecret: SECRET };
+                accessSecret: SECRET,
+                awsRegion: "us-east-1" };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err != null) {
                     if (url) {
@@ -145,7 +149,8 @@ describe("ServerEncoder", () => {
                 targetBucket: TEST_BUCKET,
                 targetKey: TEST_KEY,
                 accessKeyId: ACCESS_ID,
-                accessSecret: "12345" };
+                accessSecret: "12345",
+                awsRegion: "us-east-1" };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 console.error(err.message);
                 if (err) {
@@ -167,7 +172,8 @@ describe("ServerEncoder", () => {
                 targetBucket: TEST_BUCKET,
                 targetKey: TEST_KEY,
                 accessKeyId: ACCESS_ID,
-                accessSecret: "12345"};
+                accessSecret: "12345",
+                awsRegion: "us-east-1"};
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     if (url) {
@@ -188,7 +194,8 @@ describe("ServerEncoder", () => {
                 targetBucket: TEST_BUCKET,
                 targetKey: TEST_KEY,
                 accessKeyId: ACCESS_ID,
-                accessSecret: SECRET };
+                accessSecret: SECRET,
+                awsRegion: "us-east-1" };
             encoder.Encoder.encode(params, (err: Error, url: String) => {
                 if (err) {
                     if (url) {

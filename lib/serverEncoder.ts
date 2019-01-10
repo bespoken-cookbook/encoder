@@ -26,6 +26,7 @@ export namespace Encoder {
         targetKey: string;
         accessKeyId: string;
         accessSecret: string;
+        awsRegion: string;
     }
 
     /**
@@ -65,7 +66,8 @@ export namespace Encoder {
             // We want to set our credentials as "locally" as possible, so they don't get reused
             let s3: aws.S3 = new aws.S3({
                 accessKeyId: params.accessKeyId,
-                secretAccessKey: params.accessSecret
+                secretAccessKey: params.accessSecret,
+                region: params.awsRegion,
             });
             let putParams: aws.s3.PutObjectRequest = { Bucket: params.targetBucket, Key: params.targetKey, Body: data, ACL: "public-read"};
             s3.putObject(putParams, function(err: Error, data: any) {

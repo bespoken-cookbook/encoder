@@ -6,6 +6,7 @@ import * as process from "process";
 
 const PARAM_ACCESS_ID: string = "accessKeyID".toLocaleLowerCase();
 const PARAM_ACCESS_SECRET_KEY: string = "accessSecretKey".toLocaleLowerCase();
+const PARAM_AWS_REGION: string = "awsRegion".toLocaleLowerCase();
 const PARAM_FILTER_VOLUME: string = "filterVolume".toLocaleLowerCase();
 const PARAM_SOURCE_URL: string = "sourceUrl".toLocaleLowerCase();
 const PARAM_TARGET_BUCKET: string = "targetBucket".toLocaleLowerCase();
@@ -54,6 +55,7 @@ const app = function (request: http.IncomingMessage, response: http.ServerRespon
             let targetKey: string = headers[PARAM_TARGET_KEY];
             let accessKeyId: string = headers[PARAM_ACCESS_ID];
             let accessSecret: string = headers[PARAM_ACCESS_SECRET_KEY];
+            let awsRegion: string = headers[PARAM_AWS_REGION] || "us-east-1";
 
             // Default volume adjustment to 1.0 - which means 100% of current volume
             //  Means to just leave it alone
@@ -68,7 +70,8 @@ const app = function (request: http.IncomingMessage, response: http.ServerRespon
                 targetKey: targetKey,
                 filterVolume: filterVolume,
                 accessKeyId: accessKeyId,
-                accessSecret: accessSecret };
+                accessSecret: accessSecret,
+                awsRegion: awsRegion };
             Encoder.encode(params, function(err: Error, url: string) {
 
                 response.statusCode = (err) ? 400 : 200;
@@ -91,8 +94,8 @@ const app = function (request: http.IncomingMessage, response: http.ServerRespon
     }
 }
 
-// Get the port - set to 9200 by default
-const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 9200;
+// Get the port - set to 3000 by default
+const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 3000;
 
 let server;
 // Handle server creation differently if this is SSL or not

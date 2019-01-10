@@ -9,25 +9,12 @@ hyper-deploy-steps: &hyper-deploy-steps
   - run:  chmod +x ~/docker-compose
   - run:  sudo mv ~/docker-compose /usr/local/bin/docker-compose
   - setup_remote_docker
-#  - run:
-#      name: Install hyper
-#      command: |
-#        wget https://hyper-install.s3.amazonaws.com/hyper-linux-x86_64.tar.gz
-#        tar xzf hyper-linux-x86_64.tar.gz
-#        chmod +x hyper
-#        ./hyper --help
   - run:
       name: Build Docker
       command: |
         docker login -u $DOCKER_USER -p $DOCKER_PASS
         docker build -f dockerbuild/Dockerfile -t bespoken/encoder:$CIRCLE_TAG .
         docker push bespoken/encoder:$CIRCLE_TAG
-#  - run:
-#      name: Login to Hyper
-#      command: |
-#        ./hyper config --accesskey $HYPER_KEY --secretkey $HYPER_SECRET --default-region us-west-1
-#        ./hyper login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-#        ./hyper pull bespoken/encoder:$CIRCLE_TAG
   - run:
       name: Deploy container
       command: |
@@ -42,9 +29,6 @@ hyper-deploy-steps: &hyper-deploy-steps
         --image bespoken/encoder:$CIRCLE_TAG \
         --memory 2048 \
         --name encoder
-#        ./hyper rm -f encoder || true
-#        ./hyper run -d -e SSL_CERT="$SSL_CERT" -e SSL_KEY="$SSL_KEY" -e SERVER_PORT=443 --name encoder --size s4 --restart=always -P bespoken/encoder:$CIRCLE_TAG
-#        ./hyper fip attach 199.245.56.172 encoder
 
 version: 2
 jobs:
